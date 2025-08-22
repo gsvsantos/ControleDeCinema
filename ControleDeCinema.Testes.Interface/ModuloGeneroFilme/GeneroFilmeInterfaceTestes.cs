@@ -1,7 +1,7 @@
 namespace ControleDeCinema.Testes.Interface;
 
 [TestClass]
-public class GeneroInterfaceTestes
+public class GeneroFilmeInterfaceTestes
 {
     [TestMethod]
     public void TestMethod1()
