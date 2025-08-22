@@ -1,0 +1,69 @@
+name: Sync EPIC checkboxes (close & reopen)
+
+on:
+  issues:
+    types: [edited]
+
+jobs:
+  sync:
+    if: startsWith(github.event.issue.title, 'EPIC:') && github.event.changes.body != null
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    concurrency:
+      group: epic-sync-${{ github.event.issue.number }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Close/Reopen issues based on EPIC checklist
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+
+            const before = context.payload.changes?.body?.from || '';
+            const after  = context.payload.issue.body || '';
+
+            const getChecked = (s) => {
+              const re = /-\s*\[[xX]\]\s*#(\d+)/g;
+              return new Set([...s.matchAll(re)].map(m => Number(m[1])));
+            };
+
+            const prev = getChecked(before);
+            const curr = getChecked(after);
+
+            const toClose = [...curr].filter(n => !prev.has(n));
+            const toOpen  = [...prev].filter(n => !curr.has(n));
+
+            const uniq = (arr) => [...new Set(arr)];
+
+            for (const num of uniq(toClose)) {
+              try {
+                const { data } = await github.rest.issues.get({ owner, repo, issue_number: num });
+                if (data.pull_request) { core.info(`#${num} é PR; ignorando close`); continue; }
+                if (data.state !== 'closed') {
+                  await github.rest.issues.update({ owner, repo, issue_number: num, state: 'closed' });
+                  core.info(`Closed #${num}`);
+                } else {
+                  core.info(`#${num} já está fechado`);
+                }
+              } catch (e) {
+                core.warning(`Falha ao fechar #${num}: ${e.message}`);
+              }
+            }
+
+            for (const num of uniq(toOpen)) {
+              try {
+                const { data } = await github.rest.issues.get({ owner, repo, issue_number: num });
+                if (data.pull_request) { core.info(`#${num} é PR; ignorando reopen`); continue; }
+                if (data.state !== 'open') {
+                  await github.rest.issues.update({ owner, repo, issue_number: num, state: 'open' });
+                  core.info(`Reopened #${num}`);
+                } else {
+                  core.info(`#${num} já está aberta`);
+                }
+              } catch (e) {
+                core.warning(`Falha ao reabrir #${num}: ${e.message}`);
+              }
+            }
