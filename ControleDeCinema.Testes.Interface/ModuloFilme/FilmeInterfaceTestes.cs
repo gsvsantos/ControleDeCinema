@@ -12,8 +12,6 @@ public sealed class FilmeInterfaceTestes : TestFixture
     {
         base.InicializarTeste();
 
-        driver.Manage().Cookies.DeleteAllCookies();
-
         RegistrarContaEmpresarial();
     }
 
