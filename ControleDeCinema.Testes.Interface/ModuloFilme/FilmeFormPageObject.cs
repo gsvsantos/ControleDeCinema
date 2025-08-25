@@ -17,12 +17,11 @@ public class FilmeFormPageObject
         try
         {
             wait.Until(d =>
-            d.FindElement(By.CssSelector("form[data-se='form']")).Displayed &&
-            d.FindElement(By.CssSelector("form[data-se='form']")).Enabled);
+            d.FindElement(By.CssSelector("form[data-se='form']")).Displayed);
         }
         catch (WebDriverTimeoutException)
         {
-            DumpOnFailure(driver, "filmes-timeout");
+            DumpOnFailure(driver, "filme-timeout");
             throw;
         }
     }

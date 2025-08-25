@@ -30,7 +30,6 @@ public sealed class FilmeInterfaceTestes : TestFixture
         FilmeIndexPageObject filmeIndex = new(driver);
 
         // Act
-
         FilmeFormPageObject filmeForm = filmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar();
