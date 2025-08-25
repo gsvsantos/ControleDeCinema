@@ -1,6 +1,7 @@
-namespace ControleDeCinema.Testes.Interface;
+namespace ControleDeCinema.Testes.Interface.ModuloGeneroFilme;
 
 [TestClass]
+[TestCategory("Testes de Interface de Gênero de Filme")]
 public class GeneroFilmeInterfaceTestes
 {
     [TestMethod]
