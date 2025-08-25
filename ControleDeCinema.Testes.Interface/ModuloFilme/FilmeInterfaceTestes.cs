@@ -86,4 +86,39 @@ public sealed class FilmeInterfaceTestes : TestFixture
         // Assert
         Assert.IsTrue(filmeIndex.ContemFilme("Esposa de Mentirinha Editada"));
     }
+
+    [TestMethod]
+    public void Deve_Excluir_Filme_Corretamente()
+    {
+        // Arrange
+        GeneroFilmeIndexPageObject generoFilmeIndex = new(driver);
+
+        generoFilmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherDescricao("Comédia")
+            .ClickSubmit();
+
+        FilmeIndexPageObject filmeIndex = new(driver);
+
+        filmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherTitulo("Esposa de Mentirinha")
+            .PreencherDuracao(117)
+            .MarcarLancamento()
+            .SelecionarGenero("Comédia")
+            .ClickSubmit();
+
+        // Act
+        FilmeFormPageObject filmeForm = filmeIndex
+            .IrPara(enderecoBase)
+            .ClickExcluir();
+
+        filmeForm
+            .ClickSubmitExcluir("Esposa de Mentirinha");
+
+        // Assert
+        Assert.IsFalse(filmeIndex.ContemFilme("Esposa de Mentirinha"));
+    }
 }
