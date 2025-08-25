@@ -162,4 +162,100 @@ public sealed class FilmeInterfaceTestes : TestFixture
         Assert.IsTrue(filmeIndex.ContemFilme("Esposa de Mentirinha"));
         Assert.IsTrue(filmeIndex.ContemFilme("Cada Um Tem a Gêmea que Merece"));
     }
+
+    [TestMethod]
+    public void Nao_Deve_Cadastrar_Filme_Com_Campos_Vazios()
+    {
+        // Arrange
+        GeneroFilmeIndexPageObject generoFilmeIndex = new(driver);
+
+        generoFilmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherDescricao("Comédia")
+            .ClickSubmit();
+
+        FilmeIndexPageObject filmeIndex = new(driver);
+
+        // Act
+        FilmeFormPageObject filmeForm = filmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar();
+
+        filmeForm
+            .ClickSubmitEsperandoErros();
+
+        // Assert
+        Assert.IsTrue(filmeForm.EstourouValidacao("Titulo"));
+        Assert.IsTrue(filmeForm.EstourouValidacao("Duracao"));
+    }
+
+    [TestMethod]
+    public void Nao_Deve_Cadastrar_Filme_Com_Duracao_Invalida()
+    {
+        // Arrange
+        GeneroFilmeIndexPageObject generoFilmeIndex = new(driver);
+
+        generoFilmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherDescricao("Comédia")
+            .ClickSubmit();
+
+        FilmeIndexPageObject filmeIndex = new(driver);
+
+        // Act
+        FilmeFormPageObject filmeForm = filmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar();
+
+        filmeForm
+            .PreencherTitulo("Esposa de Mentirinha")
+            .PreencherDuracao(0)
+            .MarcarLancamento()
+            .SelecionarGenero("Comédia")
+            .ClickSubmitEsperandoErros();
+
+        // Assert
+        Assert.IsTrue(filmeForm.EstourouValidacao("Duracao"));
+    }
+
+    [TestMethod]
+    public void Nao_Deve_Cadastrar_Filme_Com_Titulo_Duplicado()
+    {
+        // Arrange
+        GeneroFilmeIndexPageObject generoFilmeIndex = new(driver);
+
+        generoFilmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherDescricao("Comédia")
+            .ClickSubmit();
+
+        FilmeIndexPageObject filmeIndex = new(driver);
+
+        filmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherTitulo("Esposa de Mentirinha")
+            .PreencherDuracao(117)
+            .MarcarLancamento()
+            .SelecionarGenero("Comédia")
+            .ClickSubmit();
+
+        // Act
+        FilmeFormPageObject filmeForm = filmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar();
+
+        filmeForm
+            .PreencherTitulo("Esposa de Mentirinha")
+            .PreencherDuracao(117)
+            .MarcarLancamento()
+            .SelecionarGenero("Comédia")
+            .ClickSubmitEsperandoErros();
+
+        // Assert
+        Assert.IsTrue(filmeForm.EstourouValidacao("Titulo"));
+    }
 }
