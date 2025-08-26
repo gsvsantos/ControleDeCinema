@@ -30,10 +30,10 @@ public abstract class FormularioSessaoViewModel
         List<Sala> salasDisponiveis
     )
     {
-        var filme = filmesDisponiveis.Find(f => f.Id == formularioVm.FilmeId)
+        Filme filme = filmesDisponiveis.Find(f => f.Id == formularioVm.FilmeId)
                     ?? throw new ArgumentException("Filme inválido.");
 
-        var sala = salasDisponiveis.Find(s => s.Id == formularioVm.SalaId)
+        Sala sala = salasDisponiveis.Find(s => s.Id == formularioVm.SalaId)
                    ?? throw new ArgumentException("Sala inválida.");
 
         return new Sessao(
@@ -96,6 +96,7 @@ public class ExcluirSessaoViewModel
     public string Filme { get; set; }
     public int Sala { get; set; }
 
+    public ExcluirSessaoViewModel() { }
     public ExcluirSessaoViewModel(Guid id, DateTime inicio, string filmeTitulo, int salaNumero)
     {
         Id = id;

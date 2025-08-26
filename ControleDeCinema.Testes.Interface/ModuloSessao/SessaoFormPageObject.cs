@@ -97,12 +97,22 @@ public class SessaoFormPageObject
         return new(driver);
     }
 
-    public SessaoIndexPageObject ClickSubmitExcluir(string titulo)
+    public SessaoIndexPageObject ClickSubmitExcluir(string tituloFilme)
     {
         wait.Until(d => d.FindElement(By.CssSelector("button[data-se='btnConfirmar']"))).Click();
         wait.Until(d => d.Url.Contains("/sessoes", StringComparison.OrdinalIgnoreCase));
         wait.Until(d => d.FindElement(By.CssSelector("a[data-se='btnCadastrar']")).Displayed);
-        wait.Until(d => !d.PageSource.Contains(titulo));
+        wait.Until(d => !d.PageSource.Contains(tituloFilme));
+
+        return new(driver);
+    }
+
+    public SessaoIndexPageObject ClickSubmitEncerrar()
+    {
+        wait.Until(d => d.FindElement(By.CssSelector("button[data-se='btnEncerrar']"))).Click();
+        wait.Until(d => d.Url.Contains("/sessoes/detalhes", StringComparison.OrdinalIgnoreCase));
+        wait.Until(d => d.FindElement(By.CssSelector("a[data-se='btnVoltar']"))).Click();
+        wait.Until(d => d.Url.Contains("/sessoes", StringComparison.OrdinalIgnoreCase));
 
         return new(driver);
     }
