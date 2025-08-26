@@ -6,8 +6,8 @@ on:
 
 env:
   ORG: ""                           # se vazio, usa o owner do repo
-  PROJECT_NUMBER: "7"               # número do project (opcional se usar TITLE)
-  PROJECT_TITLE: "Controle De Cinema"  # fallback por título (opcional, ajuda mto)
+  PROJECT_NUMBER: "7"               # número do Project v2
+  PROJECT_TITLE: "Controle De Cinema"  # opcional: usado só para logs
   MAP_CLOSED_JSON: >
     { "tipo:interface": "Pronto - Interface",
       "tipo:integracao": "Pronto - Integração",
@@ -24,11 +24,17 @@ jobs:
     permissions:
       issues: write
       contents: read
+    concurrency:
+      group: epic-sync-${{ github.event.issue.number }}
+      cancel-in-progress: false
+
     steps:
       - name: Close/Reopen & Move in Project
         uses: actions/github-script@v7
+        # se a org bloquear acesso, use um PAT:
+        # with:
+        #   github-token: ${{ secrets.WORKFLOW_PAT }}
         with:
-          # se a org bloquear acesso, use um PAT: github-token: ${{ secrets.WORKFLOW_PAT }}
           script: |
             const owner = context.repo.owner;
             const repo  = context.repo.repo;
@@ -77,47 +83,61 @@ jobs:
               } catch (e) { core.warning(`Falha ao reabrir #${num}: ${e.message}`); }
             }
 
-            // 3) localizar Project v2 de forma resiliente
+            // 3) localizar Project v2 de forma robusta
             const LOGIN = (process.env.ORG || '').trim() || owner;
-            const PROJ_NUM_ENV = (process.env.PROJECT_NUMBER || '').trim();
-            const PROJ_NUM = PROJ_NUM_ENV ? parseInt(PROJ_NUM_ENV, 10) : NaN;
+            const PROJ_NUM = parseInt(process.env.PROJECT_NUMBER || '0', 10);
             const PROJ_TITLE = (process.env.PROJECT_TITLE || '').trim();
             const ADD_IF_MISSING = process.env.ADD_IF_MISSING === "true";
             const MAP_CLOSED = JSON.parse(process.env.MAP_CLOSED_JSON || "{}");
             const MAP_OPEN   = JSON.parse(process.env.MAP_OPEN_JSON   || "{}");
 
-            core.info(`Lookup Project for login='${LOGIN}' (number=${PROJ_NUM_ENV || 'n/a'}, title='${PROJ_TITLE || 'n/a'}')`);
+            core.info(`Lookup Project: login='${LOGIN}' number=${PROJ_NUM} title='${PROJ_TITLE || '(n/a)'}'`);
 
-            const listQuery = `
-              query($login:String!) {
-                organization(login:$login) { projectsV2(first:100) { nodes { id number title } } }
-                user(login:$login)         { projectsV2(first:100) { nodes { id number title } } }
-              }`;
-            let all = [];
+            // tenta identificar se LOGIN é org
+            let isOrg = false;
             try {
-              const r = await github.graphql(listQuery, { login: LOGIN });
-              const orgList  = r.organization?.projectsV2?.nodes || [];
-              const userList = r.user?.projectsV2?.nodes || [];
-              all = [...orgList, ...userList];
-              core.info("Projects visíveis pelo token: " +
-                (all.length ? all.map(p => `#${p.number}:${p.title}`).join(" | ") : "(nenhum)"));
-            } catch (e) {
-              core.setFailed(`Falha ao listar Projects v2 para '${LOGIN}': ${e.message}`);
-              return;
-            }
+              await github.rest.orgs.get({ org: LOGIN });
+              isOrg = true;
+              core.info(`'${LOGIN}' é uma organização.`);
+            } catch { core.info(`'${LOGIN}' não parece org; tentando como usuário.`); }
 
-            let project = all.find(p => Number(p.number) === PROJ_NUM)
-                       || (PROJ_TITLE ? all.find(p => p.title === PROJ_TITLE) : undefined);
+            // tenta org.projectV2(number)
+            const orgQuery = `
+              query($login:String!, $number:Int!) {
+                organization(login:$login) {
+                  projectV2(number:$number) { id title }
+                }
+              }`;
+            // tenta user.projectV2(number)
+            const userQuery = `
+              query($login:String!, $number:Int!) {
+                user(login:$login) {
+                  projectV2(number:$number) { id title }
+                }
+              }`;
+
+            let project = null;
+            try {
+              if (isOrg) {
+                const r = await github.graphql(orgQuery, { login: LOGIN, number: PROJ_NUM });
+                project = r.organization?.projectV2 ?? null;
+              }
+              if (!project) {
+                const r2 = await github.graphql(userQuery, { login: LOGIN, number: PROJ_NUM });
+                project = r2.user?.projectV2 ?? null;
+              }
+            } catch (e) {
+              core.warning(`Falha no lookup direto por number: ${e.message}`);
+            }
 
             if (!project) {
-              core.setFailed(
-                `Project v2 não encontrado pelo token (login='${LOGIN}').\n` +
-                `→ Confirme que o **repo está linkado** ao Project e que o número/título batem.\n` +
-                `→ Vistos: ${all.map(p => `#${p.number}:${p.title}`).join(" | ") || "(nenhum)"}`
-              );
+              core.warning(`Project #${PROJ_NUM} não resolvido; conferindo se o repo está linkado e visível ao token.`);
+              core.warning(`→ Confirme em Repository → Projects → "Link a project" que '${PROJ_TITLE || '(teu project)'}' está linkado.`);
+              core.warning(`→ Se a org restringe acesso, use um PAT no github-script.`);
               return;
             }
-            core.info(`Project encontrado: #${project.number} ${project.title}`);
+
+            core.info(`Project encontrado: ${project.title}`);
 
             // carregar campo Status e opções
             const fieldsQuery = `
