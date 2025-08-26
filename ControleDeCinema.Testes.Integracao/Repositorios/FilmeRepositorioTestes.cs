@@ -89,4 +89,50 @@ public sealed class FilmeRepositorioTestes : TestFixture
         Assert.IsTrue(conseguiuExcluir);
         Assert.IsNull(filmeSelecionado);
     }
+
+    [TestMethod]
+    public void Deve_Selecionar_Filme_Por_Id_Corretamente()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoFilmePadrao);
+
+        RepositorioFilmeEmOrm.Cadastrar(novoFilme);
+
+        dbContext.SaveChanges();
+
+        // Act
+        Filme? filmeSelecionado = RepositorioFilmeEmOrm.SelecionarRegistroPorId(novoFilme.Id);
+
+        // Assert
+        Assert.IsNotNull(filmeSelecionado);
+        Assert.AreEqual(novoFilme, filmeSelecionado);
+        Assert.AreEqual(generoFilmePadrao, filmeSelecionado.Genero);
+    }
+
+    [TestMethod]
+    public void Deve_Selecionar_Todos_Filmes_Corretamente()
+    {
+        // Arrange
+        List<GeneroFilme> novosGeneros = Builder<GeneroFilme>.CreateListOfSize(3)
+            .All().With(g => g.Id = Guid.NewGuid()).Persist().ToList();
+
+        List<Filme> novosFilmes = new()
+        {
+            new("Esposa de Mentirinha", 117, true, novosGeneros[0]),
+            new("Cada um Tem A Gemea que Merece", 117, true, novosGeneros[1]),
+            new("Gente Grande 2", 117, true, novosGeneros[2])
+        };
+
+        RepositorioFilmeEmOrm.CadastrarEntidades(novosFilmes);
+
+        dbContext.SaveChanges();
+
+        // Act
+        List<Filme> filmesExistentes = RepositorioFilmeEmOrm.SelecionarRegistros();
+        List<Filme> filmesEsperados = novosFilmes;
+
+        // Assert
+        Assert.AreEqual(filmesEsperados.Count, filmesExistentes.Count);
+        CollectionAssert.AreEquivalent(filmesEsperados, filmesExistentes);
+    }
 }
