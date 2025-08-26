@@ -31,10 +31,8 @@ jobs:
     steps:
       - name: Close/Reopen & Move in Project
         uses: actions/github-script@v7
-        # se a org bloquear acesso, use um PAT:
-        # with:
-        #   github-token: ${{ secrets.WORKFLOW_PAT }}
         with:
+          github-token: ${{ secrets.WORKFLOW_PAT }}
           script: |
             const owner = context.repo.owner;
             const repo  = context.repo.repo;
