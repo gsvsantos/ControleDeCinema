@@ -6,7 +6,7 @@ on:
 
 env:
   ORG: "Compila-logo-existe"     # org ou usuário dono do Project v2
-  PROJECT_NUMBER: "1"            # número do Project v2 (não é o ID)
+  PROJECT_NUMBER: "7"            # número do Project v2 (não é o ID)
   # mapeie label -> opção do campo Status (exatamente como aparece no Project)
   MAP_JSON: >
     {
