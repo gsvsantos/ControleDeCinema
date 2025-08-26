@@ -82,4 +82,27 @@ public sealed class SessaoRepositorioTestes : TestFixture
         Assert.IsNotNull(sessaoSelecionada);
         Assert.AreEqual(novaSessao, sessaoSelecionada);
     }
+
+    [TestMethod]
+    public void Deve_Excluir_Sessao_Corretamente()
+    {
+        // Arrange
+        Sessao novaSessao = new(new DateTime(2002, 8, 9, 0, 0, 0, DateTimeKind.Utc),
+            12, filmePadrao, salaPadrao);
+
+        RepositorioSessaoEmOrm.Cadastrar(novaSessao);
+
+        dbContext.SaveChanges();
+
+        // Act
+        bool conseguiuExcluir = RepositorioSessaoEmOrm.Excluir(novaSessao.Id);
+
+        dbContext.SaveChanges();
+
+        // Assert
+        Sessao? sessaoSelecionada = RepositorioSessaoEmOrm.SelecionarRegistroPorId(novaSessao.Id);
+
+        Assert.IsTrue(conseguiuExcluir);
+        Assert.IsNull(sessaoSelecionada);
+    }
 }
