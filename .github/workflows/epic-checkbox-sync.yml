@@ -5,20 +5,16 @@ on:
     types: [edited]
 
 env:
-  # Se deixar vazio, usa automaticamente o owner do repo (context.repo.owner)
-  ORG: ""
-  PROJECT_NUMBER: "7"
+  ORG: ""                           # se vazio, usa o owner do repo
+  PROJECT_NUMBER: "7"               # número do project (opcional se usar TITLE)
+  PROJECT_TITLE: "Controle De Cinema"  # fallback por título (opcional, ajuda mto)
   MAP_CLOSED_JSON: >
-    {
-      "tipo:interface": "Pronto - Interface",
+    { "tipo:interface": "Pronto - Interface",
       "tipo:integracao": "Pronto - Integração",
       "tipo:unidade": "Pronto - Unidade",
-      "default": "Pronto"
-    }
+      "default": "Pronto" }
   MAP_OPEN_JSON: >
-    {
-      "default": "Em Progresso"
-    }
+    { "default": "Em Progresso" }
   ADD_IF_MISSING: "true"
 
 jobs:
@@ -28,17 +24,11 @@ jobs:
     permissions:
       issues: write
       contents: read
-    concurrency:
-      group: epic-sync-${{ github.event.issue.number }}
-      cancel-in-progress: false
-
     steps:
       - name: Close/Reopen & Move in Project
         uses: actions/github-script@v7
-        # se precisar usar PAT, descomente a linha abaixo e crie o secret WORKFLOW_PAT
-        # with:
-        #   github-token: ${{ secrets.WORKFLOW_PAT }}
         with:
+          # se a org bloquear acesso, use um PAT: github-token: ${{ secrets.WORKFLOW_PAT }}
           script: |
             const owner = context.repo.owner;
             const repo  = context.repo.repo;
@@ -61,7 +51,7 @@ jobs:
             const closedNow  = [];
             const reopenedNow = [];
 
-            // ---- 1) Close
+            // 1) fechar
             for (const num of uniq(toClose)) {
               try {
                 const { data } = await github.rest.issues.get({ owner, repo, issue_number: num });
@@ -74,7 +64,7 @@ jobs:
               } catch (e) { core.warning(`Falha ao fechar #${num}: ${e.message}`); }
             }
 
-            // ---- 2) Reopen
+            // 2) reabrir
             for (const num of uniq(toOpen)) {
               try {
                 const { data } = await github.rest.issues.get({ owner, repo, issue_number: num });
@@ -87,73 +77,77 @@ jobs:
               } catch (e) { core.warning(`Falha ao reabrir #${num}: ${e.message}`); }
             }
 
-            // ---- 3) Project v2 route
-            const LOGIN = (process.env.ORG || '').trim() || owner;           // usa ORG se setado, senão owner do repo
-            const PROJECT_NUMBER = parseInt(process.env.PROJECT_NUMBER, 10);
+            // 3) localizar Project v2 de forma resiliente
+            const LOGIN = (process.env.ORG || '').trim() || owner;
+            const PROJ_NUM_ENV = (process.env.PROJECT_NUMBER || '').trim();
+            const PROJ_NUM = PROJ_NUM_ENV ? parseInt(PROJ_NUM_ENV, 10) : NaN;
+            const PROJ_TITLE = (process.env.PROJECT_TITLE || '').trim();
             const ADD_IF_MISSING = process.env.ADD_IF_MISSING === "true";
             const MAP_CLOSED = JSON.parse(process.env.MAP_CLOSED_JSON || "{}");
             const MAP_OPEN   = JSON.parse(process.env.MAP_OPEN_JSON   || "{}");
 
-            const pickStatus = (labels, map) => {
-              for (const l of labels || []) { if (map[l]) return map[l]; }
-              return map.default;
-            };
+            core.info(`Lookup Project for login='${LOGIN}' (number=${PROJ_NUM_ENV || 'n/a'}, title='${PROJ_TITLE || 'n/a'}')`);
 
-            core.info(`Lookup Project: login='${LOGIN}' number=${PROJECT_NUMBER}`);
+            const listQuery = `
+              query($login:String!) {
+                organization(login:$login) { projectsV2(first:100) { nodes { id number title } } }
+                user(login:$login)         { projectsV2(first:100) { nodes { id number title } } }
+              }`;
+            let all = [];
+            try {
+              const r = await github.graphql(listQuery, { login: LOGIN });
+              const orgList  = r.organization?.projectsV2?.nodes || [];
+              const userList = r.user?.projectsV2?.nodes || [];
+              all = [...orgList, ...userList];
+              core.info("Projects visíveis pelo token: " +
+                (all.length ? all.map(p => `#${p.number}:${p.title}`).join(" | ") : "(nenhum)"));
+            } catch (e) {
+              core.setFailed(`Falha ao listar Projects v2 para '${LOGIN}': ${e.message}`);
+              return;
+            }
 
-            const projQuery = `
-              query($login:String!, $number:Int!) {
-                organization(login:$login) {
-                  projectV2(number:$number) {
+            let project = all.find(p => Number(p.number) === PROJ_NUM)
+                       || (PROJ_TITLE ? all.find(p => p.title === PROJ_TITLE) : undefined);
+
+            if (!project) {
+              core.setFailed(
+                `Project v2 não encontrado pelo token (login='${LOGIN}').\n` +
+                `→ Confirme que o **repo está linkado** ao Project e que o número/título batem.\n` +
+                `→ Vistos: ${all.map(p => `#${p.number}:${p.title}`).join(" | ") || "(nenhum)"}`
+              );
+              return;
+            }
+            core.info(`Project encontrado: #${project.number} ${project.title}`);
+
+            // carregar campo Status e opções
+            const fieldsQuery = `
+              query($id:ID!) {
+                node(id:$id) {
+                  ... on ProjectV2 {
                     id title
                     fields(first:50) {
                       nodes {
-                        ... on ProjectV2SingleSelectField { id name options { id name } }
-                      }
-                    }
-                  }
-                }
-                user(login:$login) {
-                  projectV2(number:$number) {
-                    id title
-                    fields(first:50) {
-                      nodes {
-                        ... on ProjectV2SingleSelectField { id name options { id name } }
+                        ... on ProjectV2SingleSelectField {
+                          id name
+                          options { id name }
+                        }
                       }
                     }
                   }
                 }
               }`;
-
-            let project;
-            try {
-              const r = await github.graphql(projQuery, { login: LOGIN, number: PROJECT_NUMBER });
-              project = r.organization?.projectV2 ?? r.user?.projectV2;
-            } catch (e) {
-              core.setFailed(`Falha ao buscar Project v2 ${LOGIN}#${PROJECT_NUMBER}: ${e.message}`);
-              return;
-            }
-            if (!project) {
-              core.setFailed(
-                `Project v2 '${LOGIN}#${PROJECT_NUMBER}' não encontrado/sem acesso.\n` +
-                `→ Confirme que o repo ${owner}/${repo} está **linkado** ao Project (Repository → Projects → Link a project).\n` +
-                `→ Ou use PAT em github-script (WORKFLOW_PAT).`
-              );
-              return;
-            }
-
-            core.info(`Project encontrado: ${project.title} (id: ${project.id})`);
-            const statusField = project.fields.nodes.find(f => f?.name === "Status");
-            if (!statusField) { core.warning(`Campo "Status" não encontrado no Project '${project.title}'`); return; }
-
-            const findOptionId = (name) => statusField.options.find(o => o.name === name)?.id;
+            const fr = await github.graphql(fieldsQuery, { id: project.id });
+            const projNode = fr.node;
+            const statusField = projNode.fields.nodes.find(f => f?.name === "Status");
+            if (!statusField) { core.warning(`Campo 'Status' não encontrado em '${projNode.title}'`); return; }
+            const optionIdByName = (name) => statusField.options.find(o => o.name === name)?.id;
 
             const issueItemQuery = `
               query($owner:String!, $repo:String!, $num:Int!) {
                 repository(owner:$owner, name:$repo) {
                   issue(number:$num) {
                     id
-                    projectItems(first:50) { nodes { id project { ... on ProjectV2 { id number title } } } }
+                    projectItems(first:50) { nodes { id project { ... on ProjectV2 { id } } } }
                   }
                 }
               }`;
@@ -171,36 +165,34 @@ jobs:
                 }) { clientMutationId }
               }`;
 
-            const ensureItemAndSet = async (issueNumber, statusName) => {
+            const setStatus = async (issueNumber, statusName) => {
               if (!statusName) return;
-              const optionId = findOptionId(statusName);
-              if (!optionId) { core.warning(`Opção "${statusName}" não existe no Status do Project '${project.title}'`); return; }
+              const optId = optionIdByName(statusName);
+              if (!optId) { core.warning(`Opção '${statusName}' não existe em Status`); return; }
 
               const res = await github.graphql(issueItemQuery, { owner, repo, num: issueNumber });
               const issueId = res.repository?.issue?.id;
               let item = res.repository?.issue?.projectItems?.nodes?.find(n => n.project?.id === project.id);
-
               if (!item) {
-                if (!ADD_IF_MISSING) { core.info(`#${issueNumber} não está no Project; ignorando update de Status`); return; }
+                if (!ADD_IF_MISSING) { core.info(`#${issueNumber} não está no Project; ignorando`); return; }
                 const added = await github.graphql(addItemMutation, { projectId: project.id, contentId: issueId });
                 item = added.addProjectV2ItemById.item;
-                core.info(`#${issueNumber} adicionado ao Project "${project.title}"`);
+                core.info(`#${issueNumber} adicionado ao Project '${projNode.title}'`);
               }
 
               await github.graphql(updateMutation, {
                 projectId: project.id,
                 itemId: item.id,
                 fieldId: statusField.id,
-                optionId
+                optionId: optId
               });
-              core.info(`Status de #${issueNumber} → "${statusName}" atualizado no Project "${project.title}"`);
+              core.info(`Status de #${issueNumber} → '${statusName}' atualizado.`);
             };
 
-            for (const it of closedNow) {
-              const statusName = pickStatus(it.labels, MAP_CLOSED);
-              await ensureItemAndSet(it.number, statusName);
-            }
-            for (const it of reopenedNow) {
-              const statusName = pickStatus(it.labels, MAP_OPEN);
-              await ensureItemAndSet(it.number, statusName);
-            }
+            const pickStatus = (labels, map) => {
+              for (const l of labels || []) if (map[l]) return map[l];
+              return map.default;
+            };
+
+            for (const it of closedNow)  { await setStatus(it.number, pickStatus(it.labels, MAP_CLOSED)); }
+            for (const it of reopenedNow){ await setStatus(it.number, pickStatus(it.labels, MAP_OPEN)); }
