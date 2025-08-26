@@ -67,4 +67,26 @@ public sealed class FilmeRepositorioTestes : TestFixture
         Assert.IsNotNull(filmeSelecionado);
         Assert.AreEqual(novoFilme, filmeSelecionado);
     }
+
+    [TestMethod]
+    public void Deve_Excluir_Filme_Corretamente()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoFilmePadrao);
+
+        RepositorioFilmeEmOrm.Cadastrar(novoFilme);
+
+        dbContext.SaveChanges();
+
+        // Act
+        bool conseguiuExcluir = RepositorioFilmeEmOrm.Excluir(novoFilme.Id);
+
+        dbContext.SaveChanges();
+
+        // Assert
+        Filme? filmeSelecionado = RepositorioFilmeEmOrm.SelecionarRegistroPorId(novoFilme.Id);
+
+        Assert.IsTrue(conseguiuExcluir);
+        Assert.IsNull(filmeSelecionado);
+    }
 }
