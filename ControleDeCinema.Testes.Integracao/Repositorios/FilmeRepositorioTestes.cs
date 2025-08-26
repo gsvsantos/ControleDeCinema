@@ -38,4 +38,33 @@ public sealed class FilmeRepositorioTestes : TestFixture
         Assert.AreEqual(novoFilme, filmeSelecionado);
         Assert.AreEqual(generoFilmePadrao, filmeSelecionado.Genero);
     }
+
+    [TestMethod]
+    public void Deve_Editar_Filme_Corretamente()
+    {
+        // Arrange
+        Filme novoFilme = new("Como Treinar Seu Dragão", 12, true, generoFilmePadrao);
+
+        RepositorioFilmeEmOrm.Cadastrar(novoFilme);
+
+        GeneroFilme novoGenero = Builder<GeneroFilme>.CreateNew()
+            .With(g => g.Id = Guid.NewGuid())
+            .With(d => d.Descricao = "Comedia Romantica").Persist();
+
+        dbContext.SaveChanges();
+
+        // Act
+        Filme filmeEditado = new("Esposa de Mentirinha", 117, true, novoGenero);
+
+        bool conseguiuEditar = RepositorioFilmeEmOrm.Editar(novoFilme.Id, filmeEditado);
+
+        dbContext.SaveChanges();
+
+        // Assert
+        Filme? filmeSelecionado = RepositorioFilmeEmOrm.SelecionarRegistroPorId(novoFilme.Id);
+
+        Assert.IsTrue(conseguiuEditar);
+        Assert.IsNotNull(filmeSelecionado);
+        Assert.AreEqual(novoFilme, filmeSelecionado);
+    }
 }
