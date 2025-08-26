@@ -1,8 +1,27 @@
-name: Sync EPIC checkboxes (close & reopen)
+name: Sync EPIC checkboxes (close, reopen & route to Project)
 
 on:
   issues:
-    types: [edited]
+    types: [edited]   # dispara ao marcar/desmarcar checkbox no EPIC (muda o body)
+
+env:
+  ORG: "Compila-logo-existe"   # org ou usuário dono do Project v2
+  PROJECT_NUMBER: "7"          # número do Project v2 (veja na URL do Project)
+  # Quando FECHAR: label -> opção do campo Status
+  MAP_CLOSED_JSON: >
+    {
+      "tipo:interface": "Pronto - Interface",
+      "tipo:integracao": "Pronto - Integração",
+      "tipo:unidade": "Pronto - Unidade",
+      "default": "Pronto"
+    }
+  # Quando REABRIR: label -> opção do campo Status (deixe {} para não alterar ao reabrir)
+  MAP_OPEN_JSON: >
+    {
+      "default": "Em Progresso"
+    }
+  # Se a issue não estiver no Project, adicionar automaticamente?
+  ADD_IF_MISSING: "false"
 
 jobs:
   sync:
@@ -10,12 +29,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
+      contents: read
     concurrency:
       group: epic-sync-${{ github.event.issue.number }}
       cancel-in-progress: false
 
     steps:
-      - name: Close/Reopen issues based on EPIC checklist
+      - name: Close/Reopen & Move in Project
         uses: actions/github-script@v7
         with:
           script: |
@@ -26,44 +46,158 @@ jobs:
             const after  = context.payload.issue.body || '';
 
             const getChecked = (s) => {
-              const re = /-\s*\[[xX]\]\s*#(\d+)/g;
+              const re = /-\s*\[[xX]\]\s*#(\d+)/g;         // - [x] #123
               return new Set([...s.matchAll(re)].map(m => Number(m[1])));
             };
 
             const prev = getChecked(before);
             const curr = getChecked(after);
 
-            const toClose = [...curr].filter(n => !prev.has(n));
-            const toOpen  = [...prev].filter(n => !curr.has(n));
+            const toClose = [...curr].filter(n => !prev.has(n));  // marcados agora
+            const toOpen  = [...prev].filter(n => !curr.has(n));  // desmarcados agora
 
             const uniq = (arr) => [...new Set(arr)];
 
+            const closedNow  = [];
+            const reopenedNow = [];
+
+            // ---- 1) Fechar as novas marcadas
             for (const num of uniq(toClose)) {
               try {
                 const { data } = await github.rest.issues.get({ owner, repo, issue_number: num });
                 if (data.pull_request) { core.info(`#${num} é PR; ignorando close`); continue; }
                 if (data.state !== 'closed') {
                   await github.rest.issues.update({ owner, repo, issue_number: num, state: 'closed' });
+                  closedNow.push({ number: num, labels: (data.labels||[]).map(l => typeof l==='string'? l : l.name) });
                   core.info(`Closed #${num}`);
                 } else {
-                  core.info(`#${num} já está fechado`);
+                  core.info(`#${num} já estava fechado`);
+                  closedNow.push({ number: num, labels: (data.labels||[]).map(l => typeof l==='string'? l : l.name) });
                 }
               } catch (e) {
                 core.warning(`Falha ao fechar #${num}: ${e.message}`);
               }
             }
 
+            // ---- 2) Reabrir as desmarcadas
             for (const num of uniq(toOpen)) {
               try {
                 const { data } = await github.rest.issues.get({ owner, repo, issue_number: num });
                 if (data.pull_request) { core.info(`#${num} é PR; ignorando reopen`); continue; }
                 if (data.state !== 'open') {
                   await github.rest.issues.update({ owner, repo, issue_number: num, state: 'open' });
+                  reopenedNow.push({ number: num, labels: (data.labels||[]).map(l => typeof l==='string'? l : l.name) });
                   core.info(`Reopened #${num}`);
                 } else {
-                  core.info(`#${num} já está aberta`);
+                  core.info(`#${num} já estava aberta`);
+                  reopenedNow.push({ number: num, labels: (data.labels||[]).map(l => typeof l==='string'? l : l.name) });
                 }
               } catch (e) {
                 core.warning(`Falha ao reabrir #${num}: ${e.message}`);
               }
+            }
+
+            // ---- 3) Atualizar Status no Project v2
+            const ORG = process.env.ORG;
+            const PROJECT_NUMBER = parseInt(process.env.PROJECT_NUMBER, 10);
+            const ADD_IF_MISSING = process.env.ADD_IF_MISSING === "true";
+            const MAP_CLOSED = JSON.parse(process.env.MAP_CLOSED_JSON || "{}");
+            const MAP_OPEN   = JSON.parse(process.env.MAP_OPEN_JSON   || "{}");
+
+            const pickStatus = (labels, map) => {
+              for (const l of labels || []) { if (map[l]) return map[l]; }
+              return map.default;
+            };
+
+            // 3.1 carregar project + campo Status + opções
+            const projQuery = `
+              query($org:String!, $number:Int!) {
+                organization(login: $org) {
+                  projectV2(number: $number) {
+                    id title
+                    fields(first: 50) {
+                      nodes {
+                        ... on ProjectV2SingleSelectField {
+                          id name
+                          options { id name }
+                        }
+                      }
+                    }
+                  }
+                }
+              }`;
+            let project;
+            try {
+              const r = await github.graphql(projQuery, { org: ORG, number: PROJECT_NUMBER });
+              project = r.organization?.projectV2;
+            } catch (e) {
+              core.warning(`Falha ao buscar Project v2 ${ORG}#${PROJECT_NUMBER}: ${e.message}`);
+              return;
+            }
+            if (!project) { core.warning(`Project v2 ${ORG}#${PROJECT_NUMBER} não encontrado`); return; }
+
+            const statusField = project.fields.nodes.find(f => f?.name === "Status");
+            if (!statusField) { core.warning(`Campo "Status" não encontrado no Project`); return; }
+
+            const findOptionId = (name) => statusField.options.find(o => o.name === name)?.id;
+
+            const issueItemQuery = `
+              query($owner:String!, $repo:String!, $num:Int!) {
+                repository(owner:$owner, name:$repo) {
+                  issue(number:$num) {
+                    id
+                    projectItems(first: 50) { nodes { id project { ... on ProjectV2 { id number title } } } }
+                  }
+                }
+              }`;
+            const addItemMutation = `
+              mutation($projectId:ID!, $contentId:ID!) {
+                addProjectV2ItemById(input:{projectId:$projectId, contentId:$contentId}) {
+                  item { id }
+                }
+              }`;
+            const updateMutation = `
+              mutation($projectId:ID!, $itemId:ID!, $fieldId:ID!, $optionId:String!) {
+                updateProjectV2ItemFieldValue(input:{
+                  projectId:$projectId, itemId:$itemId, fieldId:$fieldId,
+                  value:{ singleSelectOptionId:$optionId }
+                }) { clientMutationId }
+              }`;
+
+            const ensureItemAndSet = async (issueNumber, statusName) => {
+              if (!statusName) return; // nada a fazer se não há mapeamento
+              const optionId = findOptionId(statusName);
+              if (!optionId) { core.warning(`Opção "${statusName}" não existe no Status do Project`); return; }
+
+              // pega item da issue no Project
+              const res = await github.graphql(issueItemQuery, { owner, repo, num: issueNumber });
+              const issueId = res.repository?.issue?.id;
+              let item = res.repository?.issue?.projectItems?.nodes?.find(n => n.project?.id === project.id);
+
+              if (!item) {
+                if (!ADD_IF_MISSING) { core.info(`#${issueNumber} não está no Project; ignorando update de Status`); return; }
+                const added = await github.graphql(addItemMutation, { projectId: project.id, contentId: issueId });
+                item = added.addProjectV2ItemById.item;
+                core.info(`#${issueNumber} adicionado ao Project "${project.title}"`);
+              }
+
+              await github.graphql(updateMutation, {
+                projectId: project.id,
+                itemId: item.id,
+                fieldId: statusField.id,
+                optionId
+              });
+              core.info(`Status de #${issueNumber} → "${statusName}" atualizado no Project "${project.title}"`);
+            };
+
+            // fechar → mover para "Pronto - X"
+            for (const it of closedNow) {
+              const statusName = pickStatus(it.labels, MAP_CLOSED);
+              await ensureItemAndSet(it.number, statusName);
+            }
+
+            // reabrir → mover para "Em Progresso - X" (se mapeado)
+            for (const it of reopenedNow) {
+              const statusName = pickStatus(it.labels, MAP_OPEN);
+              await ensureItemAndSet(it.number, statusName);
             }
