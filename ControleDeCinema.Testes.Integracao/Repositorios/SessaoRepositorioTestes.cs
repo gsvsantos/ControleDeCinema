@@ -105,4 +105,116 @@ public sealed class SessaoRepositorioTestes : TestFixture
         Assert.IsTrue(conseguiuExcluir);
         Assert.IsNull(sessaoSelecionada);
     }
+
+    [TestMethod]
+    public void Deve_Selecionar_Sessao_Por_Id_Corretamente()
+    {
+        // Arrange
+        Sessao novaSessao = new(new DateTime(2002, 8, 9, 0, 0, 0, DateTimeKind.Utc),
+            12, filmePadrao, salaPadrao);
+
+        RepositorioSessaoEmOrm.Cadastrar(novaSessao);
+
+        dbContext.SaveChanges();
+
+        // Act
+        Sessao? sessaoSelecionada = RepositorioSessaoEmOrm.SelecionarRegistroPorId(novaSessao.Id);
+
+        // Assert
+        Assert.IsNotNull(sessaoSelecionada);
+        Assert.AreEqual(novaSessao, sessaoSelecionada);
+        Assert.IsNotNull(sessaoSelecionada.Filme);
+        Assert.IsNotNull(sessaoSelecionada.Sala);
+        Assert.AreEqual(filmePadrao, sessaoSelecionada.Filme);
+        Assert.AreEqual(salaPadrao, sessaoSelecionada.Sala);
+    }
+
+    [TestMethod]
+    public void Deve_Selecionar_Todas_Sessoes_Corretamente()
+    {
+        // Arrange
+        List<GeneroFilme> novosGeneros = Builder<GeneroFilme>.CreateListOfSize(3)
+            .All().With(g => g.Id = Guid.NewGuid()).Persist().ToList();
+
+        List<Filme> novosFilmes = Builder<Filme>.CreateListOfSize(3)
+            .All()
+            .DoForEach((f, g) => f.Genero = g, novosGeneros)
+            .With(f => f.Id = Guid.NewGuid()).Persist().ToList();
+
+        List<Sala> novasSalas = Builder<Sala>.CreateListOfSize(3)
+            .All().With(g => g.Id = Guid.NewGuid()).Persist().ToList();
+
+        List<Sessao> novasSessoes = new()
+        {
+            new(new DateTime(2002, 8, 9, 0, 0, 0, DateTimeKind.Utc),
+            12, novosFilmes[0], novasSalas[0]),
+            new(new DateTime(2023, 4, 2, 0, 0, 0, DateTimeKind.Utc),
+            15, novosFilmes[1], novasSalas[1]),
+            new(new DateTime(2012, 1, 6, 0, 0, 0, DateTimeKind.Utc),
+            21, novosFilmes[2], novasSalas[2])
+        };
+
+        RepositorioSessaoEmOrm.CadastrarEntidades(novasSessoes);
+
+        dbContext.SaveChanges();
+
+        // Act
+        List<Sessao> sessoesExistentes = RepositorioSessaoEmOrm.SelecionarRegistros();
+        List<Sessao> sessoesEsperadas = novasSessoes;
+
+        // Assert
+        Assert.AreEqual(sessoesEsperadas.Count, sessoesExistentes.Count);
+        CollectionAssert.AreEquivalent(sessoesEsperadas, sessoesExistentes);
+    }
+
+    [TestMethod]
+    public void Deve_Selecionar_Todas_Sessoes_Do_Usuario_Corretamente()
+    {
+        // Arrange
+        Guid usuarioId = Guid.NewGuid();
+
+        List<GeneroFilme> novosGeneros = Builder<GeneroFilme>.CreateListOfSize(3)
+            .All().With(g => g.Id = Guid.NewGuid()).Persist().ToList();
+
+        List<Filme> novosFilmes = Builder<Filme>.CreateListOfSize(3)
+            .All()
+            .DoForEach((f, g) => f.Genero = g, novosGeneros)
+            .With(f => f.Id = Guid.NewGuid()).Persist().ToList();
+
+        List<Sala> novasSalas = Builder<Sala>.CreateListOfSize(3)
+            .All().With(g => g.Id = Guid.NewGuid()).Persist().ToList();
+
+        List<Sessao> sessoesDoUsuario = new()
+        {
+            new(new DateTime(2002, 8, 9, 0, 0, 0, DateTimeKind.Utc),
+            12, novosFilmes[0], novasSalas[0])
+            { UsuarioId = usuarioId },
+            new(new DateTime(2023, 4, 2, 0, 0, 0, DateTimeKind.Utc),
+            15, novosFilmes[1], novasSalas[1])
+            { UsuarioId = usuarioId },
+            new(new DateTime(2012, 1, 6, 0, 0, 0, DateTimeKind.Utc),
+            21, novosFilmes[2], novasSalas[2])
+            { UsuarioId = usuarioId }
+        };
+
+        RepositorioSessaoEmOrm.CadastrarEntidades(sessoesDoUsuario);
+
+        List<Sessao> sessoesDeOutros = Builder<Sessao>.CreateListOfSize(3)
+            .All()
+            .With(s => s.Inicio = new DateTime(2010, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+            .DoForEach((s, f) => s.Filme = f, novosFilmes)
+            .DoForEach((s, sa) => s.Sala = sa, novasSalas)
+            .With(s => s.UsuarioId = Guid.NewGuid()).Persist().ToList();
+
+        dbContext.SaveChanges();
+
+        // Act
+        List<Sessao> sessoesExistentes = RepositorioSessaoEmOrm.SelecionarRegistros();
+        List<Sessao> sessoesFiltradas = RepositorioSessaoEmOrm.SelecionarRegistrosDoUsuario(usuarioId);
+        List<Sessao> sessoesEsperadas = sessoesDoUsuario;
+
+        // Assert
+        Assert.AreEqual(sessoesEsperadas.Count, sessoesFiltradas.Count);
+        CollectionAssert.AreEquivalent(sessoesEsperadas, sessoesFiltradas);
+    }
 }
