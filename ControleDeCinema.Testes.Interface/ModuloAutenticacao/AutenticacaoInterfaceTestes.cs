@@ -26,6 +26,7 @@ public sealed class AutenticacaoInterfaceTestes : TestFixture
         // Assert
         Assert.IsTrue(autenticacaoIndex.EstaLogado());
     }
+
     [TestMethod]
     public void Deve_Cadastrar_Cliente_Corretamente()
     {
@@ -41,6 +42,34 @@ public sealed class AutenticacaoInterfaceTestes : TestFixture
             .PreencherConfirmarSenha(senhaPadrao)
             .SelecionarTipoUsuario("Cliente")
             .ClickSubmitRegistro();
+
+        // Assert
+        Assert.IsTrue(autenticacaoIndex.EstaLogado());
+    }
+
+    [TestMethod]
+    public void Deve_Realizar_Login_Corretamente()
+    {
+        // Arrange
+        AutenticacaoIndexPageObject autenticacaoIndex = new(driver);
+        autenticacaoIndex
+            .IrParaRegistro(enderecoBase)
+            .PreencherEmail(emailEmpresa)
+            .PreencherSenha(senhaPadrao)
+            .PreencherConfirmarSenha(senhaPadrao)
+            .SelecionarTipoUsuario("Empresa")
+            .ClickSubmitRegistro();
+
+        FazerLogout();
+
+        // Act
+        AutenticacaoFormPageObject autenticacaoForm = autenticacaoIndex
+             .IrParaLogin(enderecoBase);
+
+        autenticacaoForm
+            .PreencherEmail(emailEmpresa)
+            .PreencherSenha(senhaPadrao)
+            .ClickSubmitLogin();
 
         // Assert
         Assert.IsTrue(autenticacaoIndex.EstaLogado());
