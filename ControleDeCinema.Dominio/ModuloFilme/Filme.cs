@@ -30,7 +30,7 @@ public class Filme : EntidadeBase<Filme>
     {
         Titulo = registroEditado.Titulo;
         Duracao = registroEditado.Duracao;
-        Genero = registroEditado.Genero;
         Lancamento = registroEditado.Lancamento;
+        Genero = registroEditado.Genero;
     }
 }
