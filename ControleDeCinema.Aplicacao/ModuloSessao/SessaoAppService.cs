@@ -34,9 +34,15 @@ public class SessaoAppService
         if (sessao.NumeroMaximoIngressos > sessao.Sala.Capacidade)
             erros.Add("O número máximo de ingressos não pode exceder a capacidade da sala.");
 
+        var novaSessaoInicio = sessao.Inicio;
+        var novoSessaoFim = sessao.Inicio.AddMinutes(Convert.ToDouble(sessao.Filme.Duracao));
+
         // evitar duplicidade de sessão por sala/horário
         var duplicada = repositorioSessao.SelecionarRegistros()
-            .Any(s => s.Sala.Id.Equals(sessao.Sala.Id) && s.Inicio.Equals(sessao.Inicio));
+            .Any(s => s.Sala.Id.Equals(sessao.Sala.Id) && s.Inicio.Date.Equals(sessao.Inicio.Date) &&
+                novaSessaoInicio < s.Inicio.AddMinutes(Convert.ToDouble(s.Filme.Duracao)) &&
+                s.Inicio < novoSessaoFim
+            );
 
         if (duplicada)
             erros.Add("Já existe uma sessão nesta sala para o mesmo horário.");
