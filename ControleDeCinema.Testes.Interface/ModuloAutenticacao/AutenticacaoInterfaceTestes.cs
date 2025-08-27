@@ -74,4 +74,32 @@ public sealed class AutenticacaoInterfaceTestes : TestFixture
         // Assert
         Assert.IsTrue(autenticacaoIndex.EstaLogado());
     }
+
+    [TestMethod]
+    public void Nao_Deve_Realizar_Login_Com_Credenciais_Invalidas()
+    {
+        // Arrange
+        AutenticacaoIndexPageObject autenticacaoIndex = new(driver);
+        autenticacaoIndex
+            .IrParaRegistro(enderecoBase)
+            .PreencherEmail(emailEmpresa)
+            .PreencherSenha(senhaPadrao)
+            .PreencherConfirmarSenha(senhaPadrao)
+            .SelecionarTipoUsuario("Empresa")
+            .ClickSubmitRegistro();
+
+        FazerLogout();
+
+        // Act
+        AutenticacaoFormPageObject autenticacaoForm = autenticacaoIndex
+             .IrParaLogin(enderecoBase);
+
+        autenticacaoForm
+            .PreencherEmail(emailCliente)
+            .PreencherSenha("2312")
+            .ClickSubmitEsperandoErros();
+
+        // Assert
+        Assert.IsTrue(autenticacaoForm.EstourouValidacao());
+    }
 }
