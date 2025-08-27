@@ -54,7 +54,7 @@ public class SessaoInterfaceTestes : TestFixture
             .ClickCadastrar();
 
         sessaoForm
-            .PreencherInicio("2025-08-26T14:30")
+            .PreencherInicio("2025-08-12T14:15")
             .PreencherNumeroMaximoIngressos(12)
             .SelecionarFilme("Esposa de Mentirinha")
             .SelecionarSala(5)
@@ -117,7 +117,7 @@ public class SessaoInterfaceTestes : TestFixture
             .ClickEditar();
 
         sessaoForm
-            .PreencherInicio("2025-08-22T14:30")
+            .PreencherInicio("2025-08-24T14:30")
             .PreencherNumeroMaximoIngressos(12)
             .SelecionarFilme("Todo Mundo Tem a Irmã Gêmea Que Merece")
             .SelecionarSala(5)
@@ -178,5 +178,57 @@ public class SessaoInterfaceTestes : TestFixture
 
         // Assert
         Assert.IsFalse(sessaoIndex.ContemSessao("Esposa de Mentirinha"));
+    }
+
+    [TestMethod]
+    public void Deve_Visualizar_Detalhes_Sessao_Corretamente()
+    {
+        // Arrange
+        GeneroFilmeIndexPageObject generoFilmeIndex = new(driver);
+        generoFilmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherDescricao("Comédia")
+            .ClickSubmit();
+
+        FilmeIndexPageObject filmeIndex = new(driver);
+        filmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherTitulo("Esposa de Mentirinha")
+            .PreencherDuracao(117)
+            .MarcarLancamento()
+            .SelecionarGenero("Comédia")
+            .ClickSubmit();
+
+        SalaIndexPageObject salaIndex = new(driver);
+        salaIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherNumero(5)
+            .PreencherCapacidade(50)
+            .ClickSubmit();
+
+        SessaoIndexPageObject sessaoIndex = new(driver);
+        sessaoIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherInicio("2025-08-12T14:15")
+            .PreencherNumeroMaximoIngressos(6)
+            .SelecionarFilme("Esposa de Mentirinha")
+            .SelecionarSala(5)
+            .ClickSubmit();
+
+        // Act
+        sessaoIndex
+            .IrPara(enderecoBase)
+            .ClickDetalhes();
+
+        // Assert
+        Assert.IsTrue(sessaoIndex.ContemInicio("2025-08-12T14:15"));
+        Assert.IsTrue(sessaoIndex.ContemMaxIngressos(6));
+        Assert.IsTrue(sessaoIndex.ContemFilme("Esposa de Mentirinha"));
+        Assert.IsTrue(sessaoIndex.ContemSala(5));
+        Assert.IsTrue(sessaoIndex.ContemStatus());
     }
 }

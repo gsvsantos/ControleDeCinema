@@ -16,7 +16,7 @@
 
                     <div class="form-group d-grid gap-2 mt-3">
                         <label asp-for="Inicio" class="control-label fs-5">Início:</label>
-                        <input asp-for="Inicio" class="form-control" data-se="inputInicio"/>
+                        <input asp-for="Inicio" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" data-se="inputInicio" />
                         <span asp-validation-for="Inicio" class="text-danger"></span>
                     </div>
 

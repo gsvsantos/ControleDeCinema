@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace ControleDeCinema.Testes.Interface.ModuloSessao;
 
@@ -26,62 +27,92 @@ public class SessaoFormPageObject
         }
     }
 
-    internal SessaoFormPageObject PreencherInicio(string inicio)
+    public SessaoFormPageObject PreencherInicio(string inicio)
     {
         wait.Until(d =>
             d.FindElement(By.CssSelector("input[data-se='inputInicio']")).Displayed &&
             d.FindElement(By.CssSelector("input[data-se='inputInicio']")).Enabled
         );
 
-        IWebElement inputTitulo = driver.FindElement(By.CssSelector("input[data-se='inputInicio']"));
-        inputTitulo.Clear();
-        inputTitulo.SendKeys(inicio);
+        IWebElement input = driver.FindElement(By.CssSelector("input[data-se='inputInicio']"));
+
+        DateTime dt = DateTime.ParseExact(
+            inicio, "yyyy-MM-dd'T'HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
+
+        string ano = dt.ToString("yyyy", CultureInfo.InvariantCulture);
+        string mes = dt.ToString("MM", CultureInfo.InvariantCulture);
+        string dia = dt.ToString("dd", CultureInfo.InvariantCulture);
+        string hora = dt.ToString("HH", CultureInfo.InvariantCulture);
+        string min = dt.ToString("mm", CultureInfo.InvariantCulture);
+
+        input.Click();
+
+        // Dia
+        input.SendKeys(dia);
+
+        // Mês
+        input.SendKeys(mes);
+
+        // Ano
+        input.SendKeys(ano);
+        input.SendKeys(Keys.ArrowRight);
+
+        // Hora
+        input.SendKeys(hora);
+
+        // Minuto
+        input.SendKeys(min);
+
+        // Força validação
+        input.SendKeys(Keys.Tab);
+
+        string? valor = input.GetDomProperty("value");
 
         return this;
     }
 
-    internal SessaoFormPageObject PreencherNumeroMaximoIngressos(int numeroMaximoIngressos)
+    public SessaoFormPageObject PreencherNumeroMaximoIngressos(int numeroMaximoIngressos)
     {
         wait.Until(d =>
             d.FindElement(By.CssSelector("input[data-se='inputNumeroMaximoIngressos']")).Displayed &&
             d.FindElement(By.CssSelector("input[data-se='inputNumeroMaximoIngressos']")).Enabled
         );
 
-        IWebElement inputDuracao = driver.FindElement(By.CssSelector("input[data-se='inputNumeroMaximoIngressos']"));
-        inputDuracao.Clear();
-        inputDuracao.SendKeys(numeroMaximoIngressos.ToString());
+        IWebElement inputNumeroMaximoIngressos = driver.FindElement(By.CssSelector("input[data-se='inputNumeroMaximoIngressos']"));
+        inputNumeroMaximoIngressos.Clear();
+        inputNumeroMaximoIngressos.SendKeys(numeroMaximoIngressos.ToString());
 
         return this;
     }
 
-    internal SessaoFormPageObject SelecionarFilme(string tituloFilme)
+    public SessaoFormPageObject SelecionarFilme(string tituloFilme)
     {
         wait.Until(d =>
             d.FindElement(By.CssSelector("select[data-se='selectFilme']")).Displayed &&
             d.FindElement(By.CssSelector("select[data-se='selectFilme']")).Enabled
         );
 
-        SelectElement selectGenero = new(driver.FindElement(By.CssSelector("select[data-se='selectFilme']")));
+        SelectElement selectFilme = new(driver.FindElement(By.CssSelector("select[data-se='selectFilme']")));
 
-        wait.Until(_ => selectGenero.Options.Any(o => o.Text == tituloFilme));
+        wait.Until(_ => selectFilme.Options.Any(o => o.Text == tituloFilme));
 
-        selectGenero.SelectByText(tituloFilme);
+        selectFilme.SelectByText(tituloFilme);
 
         return this;
     }
 
-    internal SessaoFormPageObject SelecionarSala(int numeroSala)
+    public SessaoFormPageObject SelecionarSala(int numeroSala)
     {
         wait.Until(d =>
             d.FindElement(By.CssSelector("select[data-se='selectSala']")).Displayed &&
             d.FindElement(By.CssSelector("select[data-se='selectSala']")).Enabled
         );
 
-        SelectElement selectGenero = new(driver.FindElement(By.CssSelector("select[data-se='selectSala']")));
+        SelectElement selectSala = new(driver.FindElement(By.CssSelector("select[data-se='selectSala']")));
 
-        wait.Until(_ => selectGenero.Options.Any(o => o.Text == numeroSala.ToString()));
+        wait.Until(_ => selectSala.Options.Any(o => o.Text == numeroSala.ToString()));
 
-        selectGenero.SelectByText(numeroSala.ToString());
+        selectSala.SelectByText(numeroSala.ToString());
 
         return this;
     }
