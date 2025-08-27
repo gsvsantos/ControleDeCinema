@@ -7,6 +7,7 @@ public class RegistroViewModel
 {
     [Required(ErrorMessage = "O campo \"Email\" é obrigatório.")]
     [EmailAddress(ErrorMessage = "O campo \"Email\" precisa ser um endereço de email válido.")]
+    [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$", ErrorMessage = "O campo \"Email\" precisa ser um endereço de email válido.")]
     public string? Email { get; set; }
 
     [Required(ErrorMessage = "O campo \"Senha\" é obrigatório.")]
