@@ -1,7 +1,6 @@
 using ControleDeCinema.Testes.Interface.Compartilhado;
-using ControleDeCinema.Testes.Interface.ModuloAutenticacao;
 
-namespace ControleDeCinema.Testes.Interface;
+namespace ControleDeCinema.Testes.Interface.ModuloAutenticacao;
 
 [TestClass]
 [TestCategory("Testes de Interface de Autenticação")]

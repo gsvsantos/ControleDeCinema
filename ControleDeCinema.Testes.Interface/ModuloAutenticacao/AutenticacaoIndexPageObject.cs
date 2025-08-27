@@ -1,6 +1,5 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using System.Collections.ObjectModel;
 
 namespace ControleDeCinema.Testes.Interface.ModuloAutenticacao;
 
@@ -14,6 +13,7 @@ public class AutenticacaoIndexPageObject
         this.driver = driver;
 
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+        wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException), typeof(NoSuchElementException));
     }
 
     public AutenticacaoFormPageObject IrParaRegistro(string enderecoBase)

@@ -15,10 +15,12 @@ public class SessaoFormPageObject
         this.driver = driver;
 
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+        wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException), typeof(NoSuchElementException));
+
         try
         {
             wait.Until(d =>
-            d.FindElement(By.CssSelector("form[data-se='form']")).Displayed);
+                d.FindElement(By.CssSelector(cssSelectorToFind: "form[data-se='form']")).Displayed);
         }
         catch (WebDriverTimeoutException)
         {
@@ -45,28 +47,21 @@ public class SessaoFormPageObject
         string hora = dt.ToString("HH", CultureInfo.InvariantCulture);
         string min = dt.ToString("mm", CultureInfo.InvariantCulture);
 
+        // Importante fazer nessa sequencia por conta do input type=date Chrome-PTBR
         input.Click();
 
-        // Dia
         input.SendKeys(dia);
 
-        // Mês
         input.SendKeys(mes);
 
-        // Ano
         input.SendKeys(ano);
         input.SendKeys(Keys.ArrowRight);
 
-        // Hora
         input.SendKeys(hora);
 
-        // Minuto
         input.SendKeys(min);
 
-        // Força validação
         input.SendKeys(Keys.Tab);
-
-        string? valor = input.GetDomProperty("value");
 
         return this;
     }
@@ -151,7 +146,6 @@ public class SessaoFormPageObject
     public SessaoFormPageObject ClickSubmitEsperandoErros()
     {
         wait.Until(d => d.FindElement(By.CssSelector("button[data-se='btnConfirmar']"))).Click();
-
         wait.Until(d =>
         {
             bool segueNoCadastro = d.Url.Contains("/sessoes/cadastrar", StringComparison.OrdinalIgnoreCase) &&

@@ -14,10 +14,12 @@ public class FilmeFormPageObject
         this.driver = driver;
 
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+        wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException), typeof(NoSuchElementException));
+
         try
         {
             wait.Until(d =>
-            d.FindElement(By.CssSelector("form[data-se='form']")).Displayed);
+                d.FindElement(By.CssSelector("form[data-se='form']")).Displayed);
         }
         catch (WebDriverTimeoutException)
         {
@@ -107,7 +109,6 @@ public class FilmeFormPageObject
     public FilmeFormPageObject ClickSubmitEsperandoErros()
     {
         wait.Until(d => d.FindElement(By.CssSelector("button[data-se='btnConfirmar']"))).Click();
-
         wait.Until(d =>
         {
             bool segueNoCadastro = d.Url.Contains("/filmes/cadastrar", StringComparison.OrdinalIgnoreCase) &&
@@ -125,11 +126,14 @@ public class FilmeFormPageObject
         return this;
     }
 
-    public bool EstourouValidacao(string nomeCampo)
+    public bool EstourouValidacao(string nomeCampo = "")
     {
-        IWebElement span = driver.FindElement(By.CssSelector($"span[data-valmsg-for='{nomeCampo}']"));
-        if (!string.IsNullOrWhiteSpace(span.Text?.Trim()))
-            return true;
+        if (!string.IsNullOrWhiteSpace(nomeCampo))
+        {
+            IWebElement span = driver.FindElement(By.CssSelector($"span[data-valmsg-for='{nomeCampo}']"));
+            if (!string.IsNullOrWhiteSpace(span.Text?.Trim()))
+                return true;
+        }
 
         ReadOnlyCollection<IWebElement> alerts = driver.FindElements(By.CssSelector("div.alert[role='alert']"));
         return alerts.Any(a => a.Displayed && !string.IsNullOrWhiteSpace(a.Text));

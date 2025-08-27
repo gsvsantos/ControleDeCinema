@@ -134,7 +134,7 @@
                                 </a>
                             }
                         }
-                        else if (User.IsInRole("Cliente") && @registro.IngressosDisponiveis > 1)
+                        else if (User.IsInRole("Cliente") && @registro.IngressosDisponiveis >= 1)
                         {
                             <a asp-controller="Ingresso" asp-action="ComprarIngresso" asp-route-sessaoId="@registro.Id" class="btn btn-success rounded-circle card-option" title="Comprar Ingresso" data-se="btnComprarIngresso">
                                 <i class="bi bi-ticket-perforated"></i>

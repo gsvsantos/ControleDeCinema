@@ -253,6 +253,6 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(filmeForm.EstourouValidacao("Titulo"));
+        Assert.IsTrue(filmeForm.EstourouValidacao());
     }
 }

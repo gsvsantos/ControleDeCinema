@@ -1,13 +1,14 @@
 using ControleDeCinema.Testes.Interface.Compartilhado;
 using ControleDeCinema.Testes.Interface.ModuloFilme;
 using ControleDeCinema.Testes.Interface.ModuloGeneroFilme;
+using ControleDeCinema.Testes.Interface.ModuloIngresso;
 using ControleDeCinema.Testes.Interface.ModuloSala;
 
 namespace ControleDeCinema.Testes.Interface.ModuloSessao;
 
 [TestClass]
 [TestCategory("Testes de Interface de Sessão")]
-public class SessaoInterfaceTestes : TestFixture
+public sealed class SessaoInterfaceTestes : TestFixture
 {
     [TestInitialize]
     public override void InicializarTeste()
@@ -275,7 +276,7 @@ public class SessaoInterfaceTestes : TestFixture
         FazerLogout();
         RegistrarContaCliente();
 
-        SessaoFormPageObject sessaoForm = sessaoIndex
+        SessaoFormPageObject _ = sessaoIndex
             .IrPara(enderecoBase)
             .ClickComprarIngresso();
 
@@ -283,7 +284,7 @@ public class SessaoInterfaceTestes : TestFixture
         ingressoPage
             .SelecionarAssento(1)
             .MarcarMeiaEntrada()
-            .ClickSubmit();
+            .ClickSubmitComoCliente();
 
         sessaoIndex
             .IrPara(enderecoBase)
@@ -291,7 +292,7 @@ public class SessaoInterfaceTestes : TestFixture
 
         ingressoPage
             .SelecionarAssento(2)
-            .ClickSubmit();
+            .ClickSubmitComoCliente();
 
         // Assert 
         FazerLogout();

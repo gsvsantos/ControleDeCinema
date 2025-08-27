@@ -14,6 +14,7 @@ public class SessaoIndexPageObject
         this.driver = driver;
 
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+        wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException), typeof(NoSuchElementException));
     }
 
     public SessaoIndexPageObject IrPara(string enderecoBase)
@@ -75,10 +76,9 @@ public class SessaoIndexPageObject
 
     public bool ContemInicio(string inicio)
     {
-        DateTime dt = DateTime.ParseExact(
-            inicio, "yyyy-MM-dd'T'HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
+        DateTime dataInicio = DateTime.ParseExact(inicio, "yyyy-MM-dd'T'HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
 
-        return driver.PageSource.Contains(dt.ToString());
+        return driver.PageSource.Contains(dataInicio.ToString());
     }
 
     public bool ContemMaxIngressos(int numeroMaximoIngressos)

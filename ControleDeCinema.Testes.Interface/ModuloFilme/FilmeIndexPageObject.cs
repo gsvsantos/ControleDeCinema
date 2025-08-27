@@ -13,6 +13,7 @@ public class FilmeIndexPageObject
         this.driver = driver;
 
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+        wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException), typeof(NoSuchElementException));
     }
 
     public FilmeIndexPageObject IrPara(string enderecoBase)
