@@ -60,7 +60,8 @@ public sealed class AutenticacaoInterfaceTestes : TestFixture
             .SelecionarTipoUsuario("Empresa")
             .ClickSubmitRegistro();
 
-        FazerLogout();
+        autenticacaoIndex
+             .FazerLogout(enderecoBase);
 
         // Act
         AutenticacaoFormPageObject autenticacaoForm = autenticacaoIndex
@@ -88,7 +89,8 @@ public sealed class AutenticacaoInterfaceTestes : TestFixture
             .SelecionarTipoUsuario("Empresa")
             .ClickSubmitRegistro();
 
-        FazerLogout();
+        autenticacaoIndex
+             .FazerLogout(enderecoBase);
 
         // Act
         AutenticacaoFormPageObject autenticacaoForm = autenticacaoIndex
@@ -101,5 +103,26 @@ public sealed class AutenticacaoInterfaceTestes : TestFixture
 
         // Assert
         Assert.IsTrue(autenticacaoForm.EstourouValidacao());
+    }
+
+    [TestMethod]
+    public void Deve_Realizar_Logout_Corretamente()
+    {
+        // Arrange
+        AutenticacaoIndexPageObject autenticacaoIndex = new(driver);
+        autenticacaoIndex
+            .IrParaRegistro(enderecoBase)
+            .PreencherEmail(emailEmpresa)
+            .PreencherSenha(senhaPadrao)
+            .PreencherConfirmarSenha(senhaPadrao)
+            .SelecionarTipoUsuario("Empresa")
+            .ClickSubmitRegistro();
+
+        // Act
+        autenticacaoIndex
+             .FazerLogout(enderecoBase);
+
+        // Assert
+        Assert.IsFalse(autenticacaoIndex.EstaLogado());
     }
 }

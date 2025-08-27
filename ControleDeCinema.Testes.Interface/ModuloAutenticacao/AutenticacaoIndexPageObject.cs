@@ -43,7 +43,7 @@ public class AutenticacaoIndexPageObject
         wait.Until(d => d.FindElements(By.CssSelector("form[action='/autenticacao/logout']")).Count > 0);
         wait.Until(d => d.FindElement(By.CssSelector("form[action='/autenticacao/logout']"))).Submit();
 
-        wait.Until(d => d.Url.Contains("/sessoes", StringComparison.OrdinalIgnoreCase));
+        wait.Until(d => d.Url.Contains("/autenticacao", StringComparison.OrdinalIgnoreCase));
         wait.Until(d => d.FindElements(By.CssSelector("form[action='/autenticacao/logout']")).Count == 0);
 
         return this;
@@ -51,6 +51,6 @@ public class AutenticacaoIndexPageObject
 
     public bool EstaLogado()
     {
-        return wait.Until(d => d.FindElements(By.CssSelector("form[action='/autenticacao/logout']")).Count > 0);
+        return driver.FindElements(By.CssSelector("form[action='/autenticacao/logout']")).Count > 0;
     }
 }
