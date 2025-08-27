@@ -103,6 +103,7 @@ public class FilmeFormPageObject
 
         return new(driver);
     }
+
     public FilmeFormPageObject ClickSubmitEsperandoErros()
     {
         wait.Until(d => d.FindElement(By.CssSelector("button[data-se='btnConfirmar']"))).Click();

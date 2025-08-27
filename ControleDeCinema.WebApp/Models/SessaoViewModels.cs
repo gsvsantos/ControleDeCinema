@@ -126,6 +126,8 @@ public class DetalhesSessaoViewModel
     public int Sala { get; set; }
     public bool Encerrada { get; set; }
     public int MaxIngressos { get; set; }
+    public int IngressosVendidos { get; set; }
+    public int IngressosDisponiveis { get; set; }
 
     public DetalhesSessaoViewModel(
         Guid id,
@@ -133,7 +135,9 @@ public class DetalhesSessaoViewModel
         string filme,
         int sala,
         bool encerrada,
-        int maxIngressos
+        int maxIngressos,
+        int ingressosVendidos,
+        int ingressosDisponiveis
     )
     {
         Id = id;
@@ -142,6 +146,8 @@ public class DetalhesSessaoViewModel
         Sala = sala;
         Encerrada = encerrada;
         MaxIngressos = maxIngressos;
+        IngressosVendidos = ingressosVendidos;
+        IngressosDisponiveis = ingressosDisponiveis;
     }
 
     public static DetalhesSessaoViewModel ParaDetalhesVm(Sessao s)
@@ -152,7 +158,9 @@ public class DetalhesSessaoViewModel
             s.Filme?.Titulo ?? string.Empty,
             s.Sala?.Numero ?? 0,
             s.Encerrada,
-            s.NumeroMaximoIngressos
+            s.NumeroMaximoIngressos,
+            s.Ingressos.Count,
+            s.ObterQuantidadeIngressosDisponiveis()
         );
     }
 }

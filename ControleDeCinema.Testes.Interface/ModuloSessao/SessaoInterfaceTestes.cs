@@ -231,4 +231,77 @@ public class SessaoInterfaceTestes : TestFixture
         Assert.IsTrue(sessaoIndex.ContemSala(5));
         Assert.IsTrue(sessaoIndex.ContemStatus());
     }
+
+    [TestMethod]
+    public void Deve_Visualizar_Ingressos_Vendidos_Por_Sessao()
+    {
+        // Arrange
+        GeneroFilmeIndexPageObject generoFilmeIndex = new(driver);
+        generoFilmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherDescricao("Comédia")
+            .ClickSubmit();
+
+        FilmeIndexPageObject filmeIndex = new(driver);
+        filmeIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherTitulo("Esposa de Mentirinha")
+            .PreencherDuracao(117)
+            .MarcarLancamento()
+            .SelecionarGenero("Comédia")
+            .ClickSubmit();
+
+        SalaIndexPageObject salaIndex = new(driver);
+        salaIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherNumero(5)
+            .PreencherCapacidade(50)
+            .ClickSubmit();
+
+        SessaoIndexPageObject sessaoIndex = new(driver);
+        sessaoIndex
+            .IrPara(enderecoBase)
+            .ClickCadastrar()
+            .PreencherInicio("2025-08-12T20:00")
+            .PreencherNumeroMaximoIngressos(10)
+            .SelecionarFilme("Esposa de Mentirinha")
+            .SelecionarSala(5)
+            .ClickSubmit();
+
+        // Act (cliente compra 2 ingressos)
+        FazerLogout();
+        RegistrarContaCliente();
+
+        SessaoFormPageObject sessaoForm = sessaoIndex
+            .IrPara(enderecoBase)
+            .ClickComprarIngresso();
+
+        IngressoFormPageObject ingressoPage = new(driver);
+        ingressoPage
+            .SelecionarAssento(1)
+            .MarcarMeiaEntrada()
+            .ClickSubmit();
+
+        sessaoIndex
+            .IrPara(enderecoBase)
+            .ClickComprarIngresso();
+
+        ingressoPage
+            .SelecionarAssento(2)
+            .ClickSubmit();
+
+        // Assert 
+        FazerLogout();
+        FazerLogin("Empresa");
+
+        sessaoIndex
+            .IrPara(enderecoBase)
+            .ClickDetalhes();
+
+        Assert.IsTrue(sessaoIndex.ContemIngressosVendidos(2));
+        Assert.IsTrue(sessaoIndex.ContemIngressosDisponiveis(8));
+    }
 }

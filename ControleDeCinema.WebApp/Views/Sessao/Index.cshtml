@@ -90,8 +90,19 @@
                         <span class="fw-semibold">Início:</span> @registro.Inicio.ToString()
                     </p>
 
+                    @if (User.IsInRole("Empresa"))
+                    {
+                        <p class="card-text mb-0">
+                            <span class="fw-semibold">Número de Ingressos:</span> @registro.MaxIngressos
+                        </p>
+
+                        <p class="card-text mb-0">
+                            <span class="fw-semibold">Ingressos:</span> @registro.IngressosVendidos / @registro.MaxIngressos
+                        </p>
+                    }
+
                     <p class="card-text mb-0">
-                        <span class="fw-semibold">Número de Ingressos:</span> @registro.MaxIngressos
+                        <span class="fw-semibold">Disponíveis:</span> @registro.IngressosDisponiveis
                     </p>
 
                     <p class="card-text">
@@ -123,7 +134,7 @@
                                 </a>
                             }
                         }
-                        else if (User.IsInRole("Cliente"))
+                        else if (User.IsInRole("Cliente") && @registro.IngressosDisponiveis > 1)
                         {
                             <a asp-controller="Ingresso" asp-action="ComprarIngresso" asp-route-sessaoId="@registro.Id" class="btn btn-success rounded-circle card-option" title="Comprar Ingresso" data-se="btnComprarIngresso">
                                 <i class="bi bi-ticket-perforated"></i>

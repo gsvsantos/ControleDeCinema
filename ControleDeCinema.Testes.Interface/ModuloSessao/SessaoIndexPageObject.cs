@@ -100,4 +100,20 @@ public class SessaoIndexPageObject
     {
         return driver.PageSource.Contains("Encerrada") || driver.PageSource.Contains("Aberta");
     }
+
+    public bool ContemIngressosVendidos(int quantidadeVendida)
+    {
+        IWebElement ingressosVendidos = wait.Until(d => d.FindElement(By.CssSelector("input[data-se='ingressosVendidos']")));
+        int value = Convert.ToInt32(ingressosVendidos.GetAttribute(attributeName: "value"));
+
+        return driver.PageSource.Contains("Ingressos vendidos:") && value == quantidadeVendida;
+    }
+
+    public bool ContemIngressosDisponiveis(int quantidadeDisponivel)
+    {
+        IWebElement ingressosDisponiveis = wait.Until(d => d.FindElement(By.CssSelector("input[data-se='ingressosDisponiveis']")));
+        int value = Convert.ToInt32(ingressosDisponiveis.GetAttribute(attributeName: "value"));
+
+        return driver.PageSource.Contains("Ingressos disponíveis:") && value == quantidadeDisponivel;
+    }
 }
