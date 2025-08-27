@@ -1,7 +1,7 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
-namespace ControleDeCinema.Testes.Interface.ModuloSessao;
+namespace ControleDeCinema.Testes.Interface.ModuloIngresso;
 
 public class IngressoIndexPageObject
 {
@@ -13,14 +13,20 @@ public class IngressoIndexPageObject
         this.driver = driver;
 
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
+        wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException), typeof(NoSuchElementException));
     }
 
-    public IngressoIndexPageObject IrParaSessoesComoCliente(string enderecoBase)
+    public IngressoIndexPageObject IrPara(string enderecoBase)
     {
         driver.Navigate().GoToUrl($"{enderecoBase.TrimEnd('/')}/sessoes");
 
         wait.Until(d => d.Url.Contains("/sessoes", StringComparison.OrdinalIgnoreCase));
 
         return this;
+    }
+
+    public bool ContemFilme(string tituloFilme)
+    {
+        return driver.PageSource.Contains(tituloFilme);
     }
 }
