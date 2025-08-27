@@ -169,11 +169,14 @@ public class SessaoFormPageObject
         return this;
     }
 
-    public bool EstourouValidacao(string nomeCampo)
+    public bool EstourouValidacao(string nomeCampo = "")
     {
-        IWebElement span = driver.FindElement(By.CssSelector($"span[data-valmsg-for='{nomeCampo}']"));
-        if (!string.IsNullOrWhiteSpace(span.Text?.Trim()))
-            return true;
+        if (!string.IsNullOrWhiteSpace(nomeCampo))
+        {
+            IWebElement span = driver.FindElement(By.CssSelector($"span[data-valmsg-for='{nomeCampo}']"));
+            if (!string.IsNullOrWhiteSpace(span.Text?.Trim()))
+                return true;
+        }
 
         ReadOnlyCollection<IWebElement> alerts = driver.FindElements(By.CssSelector("div.alert[role='alert']"));
         return alerts.Any(a => a.Displayed && !string.IsNullOrWhiteSpace(a.Text));
