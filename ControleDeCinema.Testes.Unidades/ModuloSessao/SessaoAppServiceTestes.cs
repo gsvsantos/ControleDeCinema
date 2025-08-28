@@ -9,7 +9,6 @@ using FizzWare.NBuilder;
 using FluentResults;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ControleDeCinema.Testes.Unidades.ModuloSessao;
 
@@ -699,71 +698,195 @@ public class SessaoAppServiceTestes
     [TestMethod]
     public void VenderIngresso_Deve_Retornar_Sucesso()
     {
-        // Arrange  (sessao válida, lugar livre, não encerrada, disponibilidade > 0)
+        // Arrange
+        Guid usuarioId = Guid.NewGuid();
+        tenantProviderMock
+            .SetupGet(t => t.UsuarioId)
+            .Returns(usuarioId);
+
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
 
         // Act
+        Result<Ingresso> resultadoVenda = sessaoAppService.VenderIngresso(novaSessao.Id, 1, true);
+
+        Ingresso ingressoVendido = resultadoVenda.ValueOrDefault;
 
         // Assert
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Once);
+
+        Assert.IsNotNull(resultadoVenda);
+        Assert.IsTrue(resultadoVenda.IsSuccess);
+        Assert.IsNotNull(ingressoVendido);
+        Assert.AreEqual(usuarioId, ingressoVendido.UsuarioId);
     }
 
     [TestMethod]
     public void VenderIngresso_Sessao_Inexistente_Deve_Retornar_Falha()
     {
-        // Arrange  (repositório retorna null)
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
 
         // Act
+        Result<Ingresso> resultadoVenda = sessaoAppService.VenderIngresso(Guid.NewGuid(), 1, false);
+
+        Ingresso ingressoVendido = resultadoVenda.ValueOrDefault;
 
         // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistroPorId(novaSessao.Id), Times.Never);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoVenda.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoVenda);
+        Assert.IsTrue(resultadoVenda.IsFailed);
+        Assert.IsNull(ingressoVendido);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
     }
 
     [TestMethod]
     public void VenderIngresso_Sessao_Encerrada_Deve_Retornar_Falha()
     {
-        // Arrange  (sessao.Encerrada == true)
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+        novaSessao.Encerrar();
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
 
         // Act
+        Result<Ingresso> resultadoVenda = sessaoAppService.VenderIngresso(novaSessao.Id, 1, false);
+
+        Ingresso ingressoVendido = resultadoVenda.ValueOrDefault;
 
         // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistroPorId(novaSessao.Id), Times.Once);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoVenda.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoVenda);
+        Assert.IsTrue(resultadoVenda.IsFailed);
+        Assert.IsNull(ingressoVendido);
+        Assert.AreEqual("A sessão já foi encerrada.", mensagemErro);
     }
 
     [TestMethod]
     public void VenderIngresso_Assento_Invalido_Deve_Retornar_Falha()
     {
         // Arrange  (assento < 1 ou > NumeroMaximoIngressos)
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
 
         // Act
+        Result<Ingresso> resultadoVenda = sessaoAppService.VenderIngresso(novaSessao.Id, 0, false);
+
+        Ingresso ingressoVendido = resultadoVenda.ValueOrDefault;
 
         // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistroPorId(novaSessao.Id), Times.Once);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoVenda.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoVenda);
+        Assert.IsTrue(resultadoVenda.IsFailed);
+        Assert.IsNull(ingressoVendido);
+        Assert.AreEqual("Assento inválido para esta sessão.", mensagemErro);
     }
 
     [TestMethod]
     public void VenderIngresso_Assento_Ocupado_Deve_Retornar_Falha()
     {
-        // Arrange  (sessao.Ingressos contém assento)
+        // Arrange 
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        novaSessao.GerarIngresso(3, false);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
 
         // Act
+        Result<Ingresso> resultadoVenda = sessaoAppService.VenderIngresso(novaSessao.Id, 3, true);
+
+        Ingresso ingressoVendido = resultadoVenda.ValueOrDefault;
 
         // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistroPorId(novaSessao.Id), Times.Once);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoVenda.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoVenda);
+        Assert.IsTrue(resultadoVenda.IsFailed);
+        Assert.IsNull(ingressoVendido);
+        Assert.AreEqual("Este assento já está ocupado.", mensagemErro);
     }
 
     [TestMethod]
     public void VenderIngresso_Sessao_Lotada_Deve_Retornar_Falha()
     {
-        // Arrange  (ObterQuantidadeIngressosDisponiveis() == 0)
+        Sessao novaSessao = new(inicioPadrao, 2, filmePadrao, salaPadrao);
+        novaSessao.GerarIngresso(1, false);
+        novaSessao.GerarIngresso(2, true);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
 
         // Act
+        Result<Ingresso> resultadoVenda = sessaoAppService.VenderIngresso(novaSessao.Id, 1, false);
+
+        Ingresso ingressoVendido = resultadoVenda.ValueOrDefault;
 
         // Assert
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoVenda.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoVenda);
+        Assert.IsTrue(resultadoVenda.IsFailed);
+        Assert.IsNull(ingressoVendido);
+        Assert.AreEqual("Este assento já está ocupado.", mensagemErro);
+        Assert.IsTrue(novaSessao.ObterQuantidadeIngressosDisponiveis() <= 0);
     }
 
     [TestMethod]
     public void VenderIngresso_Com_Excecao_Lancada_Deve_Retornar_Falha()
     {
         // Arrange
+        Sessao novaSessao = new(inicioPadrao, 2, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Throws(new Exception("Erro inesperado"));
 
         // Act
+        Result<Ingresso> resultadoVenda = sessaoAppService.VenderIngresso(novaSessao.Id, 1, false);
 
         // Assert
+        unitOfWorkMock.Verify(u => u.Rollback(), Times.Once);
+
+        string mensagemErro = resultadoVenda.Errors[0].Message;
+
+        Ingresso ingressoVendido = resultadoVenda.ValueOrDefault;
+
+        Assert.IsNotNull(resultadoVenda);
+        Assert.IsTrue(resultadoVenda.IsFailed);
+        Assert.IsNull(ingressoVendido);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
     }
     #endregion
 }
