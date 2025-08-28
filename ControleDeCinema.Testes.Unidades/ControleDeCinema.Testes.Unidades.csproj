@@ -17,4 +17,8 @@
     <PackageReference Include="NBuilder" Version="6.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ControleDeCinema.Aplicacao\ControleDeCinema.Aplicacao.csproj" />
+  </ItemGroup>
+
 </Project>
