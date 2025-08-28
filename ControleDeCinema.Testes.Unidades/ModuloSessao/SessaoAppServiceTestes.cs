@@ -152,4 +152,170 @@ public class SessaoAppServiceTestes
         Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
     }
     #endregion
+
+    #region Testes Edição
+    [TestMethod]
+    public void Editar_Sessao_Deve_Retornar_Sucesso()
+    {
+        // Arrange
+        Sala novaSala = Builder<Sala>.CreateNew()
+        .WithFactory(() => new Sala(2, 15) { Id = Guid.NewGuid() })
+        .Build();
+
+        DateTime novoInicio = new(2025, 08, 09, 16, 26, 00);
+        Sessao novaSessao = new(novoInicio, 15, filmePadrao, novaSala);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Sessao>() { novaSessao });
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
+
+        Sessao sessaoEditada = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.Editar(novaSessao.Id, sessaoEditada))
+            .Returns(true);
+
+        // Act
+        Result resultadoEdicao = sessaoAppService.Editar(novaSessao.Id, sessaoEditada);
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.Editar(novaSessao.Id, sessaoEditada), Times.Once);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Once);
+
+        Assert.IsNotNull(resultadoEdicao);
+        Assert.IsTrue(resultadoEdicao.IsSuccess);
+    }
+
+    [TestMethod]
+    public void Editar_Sessao_Com_Capacidade_Excedida_Deve_Retornar_Falha()
+    {
+        // Arrange  (salaPadrao capacidade = 30)
+        Sessao novaSessao = new(inicioPadrao, 15, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Sessao>() { novaSessao });
+
+        Sessao sessaoEditada = new(inicioPadrao, 40, filmePadrao, salaPadrao);
+
+        // Act
+        Result resultadoEdicao = sessaoAppService.Editar(novaSessao.Id, sessaoEditada);
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.Editar(novaSessao.Id, sessaoEditada), Times.Never);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoEdicao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoEdicao);
+        Assert.IsTrue(resultadoEdicao.IsFailed);
+        Assert.AreEqual("Registro duplicado", mensagemErro);
+    }
+
+    [TestMethod]
+    public void Editar_Sessao_Duplicada_Mesma_Sala_E_Horario_Deve_Retornar_Falha()
+    {
+        // Arrange  (filmePadrao tem 1h57 minutos, inicioPadrao é as 14:30 | 16:26 nega edição, 16:27 aceita edição)
+        Sessao novaSessao = new(inicioPadrao, 15, filmePadrao, salaPadrao);
+
+        DateTime novoInicio = new(2025, 08, 09, 16, 26, 00);
+
+        List<Sessao> sessoesExistentes = new()
+        {
+            novaSessao,
+            new Sessao(novoInicio, 30, filmePadrao, salaPadrao)
+        };
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(sessoesExistentes);
+
+        Sessao sessaoEditada = new(novoInicio, 30, filmePadrao, salaPadrao);
+
+        // Act
+        Result resultadoEdicao = sessaoAppService.Editar(novaSessao.Id, sessaoEditada);
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.Editar(novaSessao.Id, sessaoEditada), Times.Never);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoEdicao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoEdicao);
+        Assert.IsTrue(resultadoEdicao.IsFailed);
+        Assert.AreEqual("Registro duplicado", mensagemErro);
+    }
+
+    [TestMethod]
+    public void Editar_Sessao_Inexistente_Deve_Retornar_Falha()
+    {
+        // Arrange
+
+        DateTime novoInicio = new(2025, 08, 09, 16, 27, 00);
+        Sessao novaSessao = new(novoInicio, 15, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Sessao>() { novaSessao });
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
+
+        Sessao sessaoEditada = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.Editar(Guid.NewGuid(), sessaoEditada))
+            .Returns(false);
+
+        // Act
+        Result resultadoEdicao = sessaoAppService.Editar(Guid.NewGuid(), sessaoEditada);
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoEdicao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoEdicao);
+        Assert.IsTrue(resultadoEdicao.IsFailed);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
+    }
+
+    [TestMethod]
+    public void Editar_Sessao_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 15, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Sessao>() { novaSessao });
+
+        Sessao sessaoEditada = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.Editar(novaSessao.Id, sessaoEditada))
+            .Throws(new Exception("Erro inesperado"));
+
+        unitOfWorkMock
+            .Setup(u => u.Commit())
+            .Throws(new Exception("Erro na edição"));
+
+        // Act
+        Result resultadoEdicao = sessaoAppService.Editar(novaSessao.Id, sessaoEditada);
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Rollback(), Times.Once);
+
+        string mensagemErro = resultadoEdicao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoEdicao);
+        Assert.IsTrue(resultadoEdicao.IsFailed);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
+    }
+    #endregion
 }
