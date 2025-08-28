@@ -1,10 +1,8 @@
 using ControledeCinema.Dominio.Compartilhado;
 using ControleDeCinema.Aplicacao.ModuloFilme;
-using ControleDeCinema.Aplicacao.ModuloSala;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloFilme;
 using ControleDeCinema.Dominio.ModuloGeneroFilme;
-using ControleDeCinema.Dominio.ModuloSala;
 using FizzWare.NBuilder;
 using FluentResults;
 using Microsoft.Extensions.Logging;
@@ -16,16 +14,10 @@ namespace ControleDeCinema.Testes.Unidades.ModuloFilme;
 [TestCategory("Testes de Unidade de FilmeAppService")]
 public class FilmeAppServiceTestes
 {
-    // SUT
     private FilmeAppService filmeAppService;
     private static GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
         .With(d => d.Id = Guid.NewGuid())
         .With(d => d.Descricao = "Comédia")
-        .Build();
-    private static Sala salaPadrao = Builder<Sala>.CreateNew()
-        .With(s => s.Id = Guid.NewGuid())
-        .With(s => s.Numero = 1)
-        .With(s => s.Capacidade = 30)
         .Build();
 
     // Mocks
