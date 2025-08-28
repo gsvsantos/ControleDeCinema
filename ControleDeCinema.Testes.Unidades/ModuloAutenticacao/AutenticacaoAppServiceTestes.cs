@@ -310,4 +310,114 @@ public class AutenticacaoAppServiceTestes
         Assert.IsTrue(resultadoRegistro.IsSuccess);
     }
     #endregion
+
+    #region Testes Login
+    [TestMethod]
+    public async Task Login_Deve_Retornar_Sucesso()
+    {
+        // Arrange  (PasswordSignInAsync => Succeeded)
+        signInManagerMock
+            .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
+            .ReturnsAsync(SignInResult.Success);
+
+        // Act
+        Result? resultadoLogin = await autenticacaoAppService.LoginAsync(emailPadrao, senhaPadrao);
+
+        // Assert
+        Assert.IsNotNull(resultadoLogin);
+        Assert.IsTrue(resultadoLogin.IsSuccess);
+    }
+
+    [TestMethod]
+    public async Task Login_Com_Conta_Bloqueada_Deve_Retornar_Falha()
+    {
+        // Arrange  (IsLockedOut)
+        signInManagerMock
+            .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
+            .ReturnsAsync(SignInResult.LockedOut);
+
+        // Act
+        Result? resultadoLogin = await autenticacaoAppService.LoginAsync(emailPadrao, senhaPadrao);
+
+        // Assert
+        string mensagemEsperada = MensagensErroAutenticacao.ContaBloqueada;
+        string? mensagemDoResult = resultadoLogin.Errors.SelectMany(e => e.Reasons.OfType<Error>())
+            .Select(r => r.Message).FirstOrDefault();
+
+        Assert.IsNotNull(resultadoLogin);
+        Assert.IsTrue(resultadoLogin.IsFailed);
+        Assert.AreEqual("Requisição inválida", resultadoLogin.Errors[0].Message);
+        Assert.IsNotNull(mensagemDoResult);
+        Assert.AreEqual(mensagemEsperada, mensagemDoResult);
+    }
+
+    [TestMethod]
+    public async Task Login_Nao_Permitido_Deve_Retornar_Falha()
+    {
+        // Arrange  (IsNotAllowed)
+        signInManagerMock
+            .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
+            .ReturnsAsync(SignInResult.NotAllowed);
+
+        // Act
+        Result? resultadoLogin = await autenticacaoAppService.LoginAsync(emailPadrao, senhaPadrao);
+
+        // Assert
+        string mensagemEsperada = MensagensErroAutenticacao.LoginNaoPermitido;
+        string? mensagemDoResult = resultadoLogin.Errors.SelectMany(e => e.Reasons.OfType<Error>())
+            .Select(r => r.Message).FirstOrDefault();
+
+        Assert.IsNotNull(resultadoLogin);
+        Assert.IsTrue(resultadoLogin.IsFailed);
+        Assert.AreEqual("Requisição inválida", resultadoLogin.Errors[0].Message);
+        Assert.IsNotNull(mensagemDoResult);
+        Assert.AreEqual(mensagemEsperada, mensagemDoResult);
+    }
+
+    [TestMethod]
+    public async Task Login_Requer_Dois_Fatores_Deve_Retornar_Falha()
+    {
+        // Arrange  (RequiresTwoFactor)
+        signInManagerMock
+            .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
+            .ReturnsAsync(SignInResult.TwoFactorRequired);
+
+        // Act
+        Result? resultadoLogin = await autenticacaoAppService.LoginAsync(emailPadrao, senhaPadrao);
+
+        // Assert
+        string mensagemEsperada = MensagensErroAutenticacao.RequerAutenticacaoDoisFatores;
+        string? mensagemDoResult = resultadoLogin.Errors.SelectMany(e => e.Reasons.OfType<Error>())
+            .Select(r => r.Message).FirstOrDefault();
+
+        Assert.IsNotNull(resultadoLogin);
+        Assert.IsTrue(resultadoLogin.IsFailed);
+        Assert.AreEqual("Requisição inválida", resultadoLogin.Errors[0].Message);
+        Assert.IsNotNull(mensagemDoResult);
+        Assert.AreEqual(mensagemEsperada, mensagemDoResult);
+    }
+
+    [TestMethod]
+    public async Task Login_Com_Credenciais_Invalidas_Deve_Retornar_Falha()
+    {
+        // Arrange  (todas flags false; Succeeded false)
+        signInManagerMock
+            .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
+            .ReturnsAsync(SignInResult.Failed);
+
+        // Act
+        Result? resultadoLogin = await autenticacaoAppService.LoginAsync(emailPadrao, senhaPadrao);
+
+        // Assert
+        string mensagemEsperada = MensagensErroAutenticacao.DadosInvalidos;
+        string? mensagemDoResult = resultadoLogin.Errors.SelectMany(e => e.Reasons.OfType<Error>())
+            .Select(r => r.Message).FirstOrDefault();
+
+        Assert.IsNotNull(resultadoLogin);
+        Assert.IsTrue(resultadoLogin.IsFailed);
+        Assert.AreEqual("Requisição inválida", resultadoLogin.Errors[0].Message);
+        Assert.IsNotNull(mensagemDoResult);
+        Assert.AreEqual(mensagemEsperada, mensagemDoResult);
+    }
+    #endregion
 }
