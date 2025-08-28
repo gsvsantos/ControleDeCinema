@@ -385,7 +385,7 @@ public class FilmeAppServiceTestes
         Assert.IsNotNull(resultadosSelecao);
         Assert.IsTrue(resultadosSelecao.IsSuccess);
         Assert.IsNotNull(filmesSelecionados);
-        Assert.AreEqual(filmesExistentes, filmesSelecionados);
+        CollectionAssert.AreEquivalent(filmesExistentes, filmesSelecionados);
     }
 
     [TestMethod]
@@ -417,7 +417,7 @@ public class FilmeAppServiceTestes
         Assert.IsNotNull(resultadosSelecao);
         Assert.IsTrue(resultadosSelecao.IsFailed);
         Assert.IsNull(filmesSelecionados);
-        Assert.AreNotEqual(filmesExistentes, filmesSelecionados);
+        CollectionAssert.AreNotEquivalent(filmesExistentes, filmesSelecionados);
         Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
     }
     #endregion

@@ -1,5 +1,4 @@
 using ControledeCinema.Dominio.Compartilhado;
-using ControleDeCinema.Aplicacao.ModuloFilme;
 using ControleDeCinema.Aplicacao.ModuloSessao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloFilme;
@@ -402,6 +401,225 @@ public class SessaoAppServiceTestes
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsFailed);
         Assert.AreEqual("Registro não encontrado", mensagemErro);
+    }
+    #endregion
+
+    #region Testes Seleção por Id
+    [TestMethod]
+    public void Selecionar_Sessao_Por_Id_Deve_Retornar_Sucesso()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
+
+        // Act
+        Result<Sessao> resultadoSelecao = sessaoAppService.SelecionarPorId(novaSessao.Id);
+
+        Sessao sessaoSelecionada = resultadoSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistroPorId(novaSessao.Id), Times.Once);
+
+        Assert.IsNotNull(resultadoSelecao);
+        Assert.IsTrue(resultadoSelecao.IsSuccess);
+        Assert.IsNotNull(sessaoSelecionada);
+        Assert.AreEqual(novaSessao, sessaoSelecionada);
+    }
+
+    [TestMethod]
+    public void Selecionar_Sessao_Por_Id_Inexistente_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
+
+        // Act
+        Result<Sessao> resultadoSelecao = sessaoAppService.SelecionarPorId(Guid.NewGuid());
+
+        Sessao sessaoSelecionada = resultadoSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistroPorId(novaSessao.Id), Times.Never);
+
+        string mensagemErro = resultadoSelecao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoSelecao);
+        Assert.IsTrue(resultadoSelecao.IsFailed);
+        Assert.IsNull(sessaoSelecionada);
+        Assert.AreNotEqual(novaSessao, sessaoSelecionada);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
+    }
+
+    [TestMethod]
+    public void Selecionar_Sessao_Por_Id_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Throws(new Exception("Erro inesperado"));
+
+        // Act
+        Result<Sessao> resultadoSelecao = sessaoAppService.SelecionarPorId(novaSessao.Id);
+
+        Sessao sessaoSelecionada = resultadoSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistroPorId(novaSessao.Id), Times.Once);
+
+        string mensagemErro = resultadoSelecao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoSelecao);
+        Assert.IsTrue(resultadoSelecao.IsFailed);
+        Assert.IsNull(sessaoSelecionada);
+        Assert.AreNotEqual(novaSessao, sessaoSelecionada);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
+    }
+    #endregion
+
+    #region Testes Seleção de Todos (Cargos)
+    [TestMethod]
+    public void Selecionar_Todas_Sessoes_Para_Role_Empresa_Deve_Trazer_Apenas_Do_Usuario()
+    {
+        // Arrange 
+        Guid usuarioId = Guid.NewGuid();
+        Guid outroUsuarioId = Guid.NewGuid();
+
+        tenantProviderMock
+            .Setup(t => t.IsInRole("Empresa"))
+            .Returns(true);
+
+        tenantProviderMock
+            .Setup(t => t.IsInRole("Cliente"))
+            .Returns(false);
+
+        tenantProviderMock
+            .SetupGet(t => t.UsuarioId)
+            .Returns(usuarioId);
+
+        DateTime novoInicio = new(2025, 08, 09, 12, 12, 00);
+
+        List<Sessao> sessoesExistentes = new()
+        {
+            new (inicioPadrao, 30, filmePadrao, salaPadrao) { UsuarioId = usuarioId },
+            new Sessao(novoInicio, 30, filmePadrao, salaPadrao) { UsuarioId = outroUsuarioId }
+        };
+
+        List<Sessao> sessoesDoUsuario = sessoesExistentes.Where(s => s.UsuarioId.Equals(usuarioId)).ToList();
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistrosDoUsuario(usuarioId))
+            .Returns(sessoesDoUsuario);
+
+        // Act
+        Result<List<Sessao>> resultadosSelecao = sessaoAppService.SelecionarTodos();
+
+        List<Sessao> sessoesSelecionadas = resultadosSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistrosDoUsuario(usuarioId), Times.Once);
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistros(), Times.Never);
+
+        Assert.IsNotNull(resultadosSelecao);
+        Assert.IsTrue(resultadosSelecao.IsSuccess);
+        Assert.IsTrue(sessoesSelecionadas.All(s => s.UsuarioId.Equals(usuarioId)));
+        CollectionAssert.AreEquivalent(sessoesDoUsuario, sessoesSelecionadas);
+    }
+
+    [TestMethod]
+    public void Selecionar_Todas_Sessoes_Para_Role_Cliente_Deve_Trazer_Todos()
+    {
+        // Arrange 
+        Guid usuarioId = Guid.NewGuid();
+        Guid outroUsuarioId = Guid.NewGuid();
+
+        tenantProviderMock
+            .Setup(t => t.IsInRole("Empresa"))
+            .Returns(false);
+
+        tenantProviderMock
+            .Setup(t => t.IsInRole("Cliente"))
+            .Returns(true);
+
+        DateTime novoInicio = new(2025, 08, 09, 12, 12, 00);
+        DateTime novoInicio2 = new(2025, 08, 09, 22, 22, 00);
+
+        List<Sessao> sessoesExistentes = new()
+        {
+            new (inicioPadrao, 30, filmePadrao, salaPadrao) { UsuarioId = usuarioId },
+            new (novoInicio2, 30, filmePadrao, salaPadrao) { UsuarioId = usuarioId },
+            new Sessao(novoInicio, 30, filmePadrao, salaPadrao) { UsuarioId = outroUsuarioId }
+        };
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(sessoesExistentes);
+
+        // Act
+        Result<List<Sessao>> resultadosSelecao = sessaoAppService.SelecionarTodos();
+
+        List<Sessao> sessoesSelecionadas = resultadosSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistrosDoUsuario(usuarioId), Times.Never);
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistros(), Times.Once);
+
+        Assert.IsNotNull(resultadosSelecao);
+        Assert.IsTrue(resultadosSelecao.IsSuccess);
+        CollectionAssert.AreEquivalent(sessoesExistentes, sessoesSelecionadas);
+    }
+
+    [TestMethod]
+    public void Selecionar_Todas_Sessoes_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Guid usuarioId = Guid.NewGuid();
+        Guid outroUsuarioId = Guid.NewGuid();
+
+        tenantProviderMock
+            .Setup(t => t.IsInRole("Empresa"))
+            .Returns(false);
+
+        tenantProviderMock
+            .Setup(t => t.IsInRole("Cliente"))
+            .Returns(true);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Throws(new Exception("Erro inesperado"));
+
+        DateTime novoInicio = new(2025, 08, 09, 12, 12, 00);
+        DateTime novoInicio2 = new(2025, 08, 09, 22, 22, 00);
+
+        List<Sessao> sessoesExistentes = new()
+        {
+            new (inicioPadrao, 30, filmePadrao, salaPadrao) { UsuarioId = usuarioId },
+            new (novoInicio2, 30, filmePadrao, salaPadrao) { UsuarioId = usuarioId },
+            new Sessao(novoInicio, 30, filmePadrao, salaPadrao) { UsuarioId = outroUsuarioId }
+        };
+
+        // Act
+        Result<List<Sessao>> resultadosSelecao = sessaoAppService.SelecionarTodos();
+
+        List<Sessao> sessoesSelecionadas = resultadosSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistros(), Times.Once);
+
+        string mensagemErro = resultadosSelecao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadosSelecao);
+        Assert.IsTrue(resultadosSelecao.IsFailed);
+        Assert.IsNull(sessoesSelecionadas);
+        CollectionAssert.AreNotEquivalent(sessoesExistentes, sessoesSelecionadas);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
     }
     #endregion
 }
