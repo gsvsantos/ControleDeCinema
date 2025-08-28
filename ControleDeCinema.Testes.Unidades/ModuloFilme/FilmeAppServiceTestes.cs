@@ -227,4 +227,62 @@ public class FilmeAppServiceTestes
     }
     #endregion
 
+    #region Testes Exclusão
+    [TestMethod]
+    public void Excluir_Filme_Deve_Retornar_Sucesso()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Filme>() { novoFilme });
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistroPorId(novoFilme.Id))
+            .Returns(novoFilme);
+
+        // Act
+        Result resultadoExclusao = filmeAppService.Excluir(novoFilme.Id);
+
+        // Assert
+        repositorioFilmeMock.Verify(r => r.Excluir(novoFilme.Id), Times.Once);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Once);
+
+        Assert.IsNotNull(resultadoExclusao);
+        Assert.IsTrue(resultadoExclusao.IsSuccess);
+    }
+
+    [TestMethod]
+    public void Excluir_Filme_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Filme>() { novoFilme });
+
+        repositorioFilmeMock
+            .Setup(r => r.Excluir(novoFilme.Id))
+            .Throws(new Exception("Erro inesperado"));
+
+        unitOfWorkMock
+            .Setup(u => u.Commit())
+            .Throws(new Exception("Erro na exclusão"));
+
+        // Act
+        Result resultadoExclusao = filmeAppService.Excluir(novoFilme.Id);
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Rollback(), Times.Once);
+
+        string mensagemErro = resultadoExclusao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoExclusao);
+        Assert.IsTrue(resultadoExclusao.IsFailed);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
+    }
+    #endregion
+
 }
