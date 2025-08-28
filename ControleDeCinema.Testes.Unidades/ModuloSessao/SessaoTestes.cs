@@ -110,7 +110,23 @@ public class SessaoTestes
         int quantidadeDisponivel = sessao.ObterQuantidadeIngressosDisponiveis();
 
         // Assert
+        Assert.IsNotNull(quantidadeDisponivel);
         Assert.AreEqual(5, quantidadeDisponivel);
+    }
+    #endregion
+
+    #region Encerrar
+    [TestMethod]
+    public void Encerrar_Deve_Definir_Flag_Encerrada_Como_Verdadeiro()
+    {
+        // Arrange
+        sessao = new(inicioPadrao, 10, filmePadrao, salaPadrao);
+
+        // Act
+        sessao.Encerrar();
+
+        // Assert
+        Assert.IsTrue(sessao.Encerrada);
     }
     #endregion
 }
