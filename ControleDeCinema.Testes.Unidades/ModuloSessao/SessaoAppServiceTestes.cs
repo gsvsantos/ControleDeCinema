@@ -1,4 +1,5 @@
 using ControledeCinema.Dominio.Compartilhado;
+using ControleDeCinema.Aplicacao.ModuloFilme;
 using ControleDeCinema.Aplicacao.ModuloSessao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloFilme;
@@ -262,10 +263,6 @@ public class SessaoAppServiceTestes
             .Setup(r => r.SelecionarRegistros())
             .Returns(new List<Sessao>() { novaSessao });
 
-        repositorioSessaoMock
-            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
-            .Returns(novaSessao);
-
         Sessao sessaoEditada = new(inicioPadrao, 30, filmePadrao, salaPadrao);
 
         repositorioSessaoMock
@@ -316,6 +313,95 @@ public class SessaoAppServiceTestes
         Assert.IsNotNull(resultadoEdicao);
         Assert.IsTrue(resultadoEdicao.IsFailed);
         Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
+    }
+    #endregion
+
+    #region Testes Exclusão
+    [TestMethod]
+    public void Excluir_Sessao_Deve_Retornar_Sucesso()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Sessao>() { novaSessao });
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
+
+        repositorioSessaoMock
+            .Setup(r => r.Excluir(novaSessao.Id))
+            .Returns(true);
+
+        // Act
+        Result resultadoExclusao = sessaoAppService.Excluir(novaSessao.Id);
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.Excluir(novaSessao.Id), Times.Once);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Once);
+
+        Assert.IsNotNull(resultadoExclusao);
+        Assert.IsTrue(resultadoExclusao.IsSuccess);
+    }
+
+    [TestMethod]
+    public void Excluir_Sessao_Inexistente_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Sessao>() { novaSessao });
+
+        repositorioSessaoMock
+            .Setup(r => r.Excluir(Guid.NewGuid()))
+            .Returns(false);
+
+        // Act
+        Result resultadoExclusao = sessaoAppService.Excluir(Guid.NewGuid());
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoExclusao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoExclusao);
+        Assert.IsTrue(resultadoExclusao.IsFailed);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
+    }
+
+    [TestMethod]
+    public void Excluir_Sessao_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Sessao>() { novaSessao });
+
+        repositorioSessaoMock
+            .Setup(r => r.Excluir(novaSessao.Id))
+            .Throws(new Exception("Erro inesperado"));
+
+        unitOfWorkMock
+            .Setup(u => u.Commit())
+            .Throws(new Exception("Erro na exclusão"));
+
+        // Act
+        Result resultadoExclusao = sessaoAppService.Excluir(Guid.NewGuid());
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoExclusao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoExclusao);
+        Assert.IsTrue(resultadoExclusao.IsFailed);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
     }
     #endregion
 }
