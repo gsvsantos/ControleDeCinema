@@ -420,4 +420,24 @@ public class AutenticacaoAppServiceTestes
         Assert.AreEqual(mensagemEsperada, mensagemDoResult);
     }
     #endregion
+
+    #region Testes Logout
+    [TestMethod]
+    public async Task Logout_Deve_Retornar_Sucesso()
+    {
+        // Arrange
+        signInManagerMock
+            .Setup(p => p.SignOutAsync())
+            .Returns(Task.CompletedTask);
+
+        // Act
+        Result resultadoLogout = await autenticacaoAppService.LogoutAsync();
+
+        // Assert
+        signInManagerMock.Verify(s => s.SignOutAsync(), Times.Once);
+
+        Assert.IsNotNull(resultadoLogout);
+        Assert.IsTrue(resultadoLogout.IsSuccess);
+    }
+    #endregion
 }
