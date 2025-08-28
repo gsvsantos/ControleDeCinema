@@ -285,4 +285,148 @@ public class FilmeAppServiceTestes
     }
     #endregion
 
+    #region Testes Seleção por Id
+    [TestMethod]
+    public void Selecionar_Filme_Por_Id_Deve_Retornar_Sucesso()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistroPorId(novoFilme.Id))
+            .Returns(novoFilme);
+
+        // Act
+        Result<Filme> resultadoSelecao = filmeAppService.SelecionarPorId(novoFilme.Id);
+
+        Filme filmeSelecionado = resultadoSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioFilmeMock.Verify(r => r.SelecionarRegistroPorId(novoFilme.Id), Times.Once);
+
+        Assert.IsNotNull(resultadoSelecao);
+        Assert.IsTrue(resultadoSelecao.IsSuccess);
+        Assert.IsNotNull(filmeSelecionado);
+        Assert.AreEqual(novoFilme, filmeSelecionado);
+    }
+
+    [TestMethod]
+    public void Selecionar_Filme_Por_Id_Inexistente_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistroPorId(novoFilme.Id))
+            .Returns(novoFilme);
+
+        // Act
+        Result<Filme> resultadoSelecao = filmeAppService.SelecionarPorId(Guid.NewGuid());
+
+        Filme filmeSelecionado = resultadoSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioFilmeMock.Verify(r => r.SelecionarRegistroPorId(novoFilme.Id), Times.Never);
+
+        string mensagemErro = resultadoSelecao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoSelecao);
+        Assert.IsTrue(resultadoSelecao.IsFailed);
+        Assert.IsNull(filmeSelecionado);
+        Assert.AreNotEqual(novoFilme, filmeSelecionado);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
+    }
+
+    [TestMethod]
+    public void Selecionar_Filme_Por_Id_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistroPorId(novoFilme.Id))
+            .Throws(new Exception("Erro inesperado"));
+
+        // Act
+        Result<Filme> resultadoSelecao = filmeAppService.SelecionarPorId(novoFilme.Id);
+
+        Filme filmeSelecionado = resultadoSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioFilmeMock.Verify(r => r.SelecionarRegistroPorId(novoFilme.Id), Times.Once);
+
+        string mensagemErro = resultadoSelecao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoSelecao);
+        Assert.IsTrue(resultadoSelecao.IsFailed);
+        Assert.IsNull(filmeSelecionado);
+        Assert.AreNotEqual(novoFilme, filmeSelecionado);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
+    }
+    #endregion
+
+    #region Testes Seleção de Todos
+    [TestMethod]
+    public void Selecionar_Todos_Filmes_Deve_Retornar_Sucesso()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        List<Filme> filmesExistentes = new()
+        {
+            novoFilme,
+            new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao)
+        };
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(filmesExistentes);
+
+        // Act
+        Result<List<Filme>> resultadosSelecao = filmeAppService.SelecionarTodos();
+
+        List<Filme> filmesSelecionados = resultadosSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioFilmeMock.Verify(r => r.SelecionarRegistros(), Times.Once);
+
+        Assert.IsNotNull(resultadosSelecao);
+        Assert.IsTrue(resultadosSelecao.IsSuccess);
+        Assert.IsNotNull(filmesSelecionados);
+        Assert.AreEqual(filmesExistentes, filmesSelecionados);
+    }
+
+    [TestMethod]
+    public void Selecionar_Todos_Filmes_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        List<Filme> filmesExistentes = new()
+        {
+            novoFilme,
+            new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao)
+        };
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistros())
+            .Throws(new Exception("Erro inesperado"));
+
+        // Act
+        Result<List<Filme>> resultadosSelecao = filmeAppService.SelecionarTodos();
+
+        List<Filme> filmesSelecionados = resultadosSelecao.ValueOrDefault;
+
+        // Assert
+        repositorioFilmeMock.Verify(r => r.SelecionarRegistros(), Times.Once);
+
+        string mensagemErro = resultadosSelecao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadosSelecao);
+        Assert.IsTrue(resultadosSelecao.IsFailed);
+        Assert.IsNull(filmesSelecionados);
+        Assert.AreNotEqual(filmesExistentes, filmesSelecionados);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
+    }
+    #endregion
 }
