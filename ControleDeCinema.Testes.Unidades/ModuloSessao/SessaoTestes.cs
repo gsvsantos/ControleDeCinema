@@ -95,4 +95,22 @@ public class SessaoTestes
             CollectionAssert.DoesNotContain(assentosDisponiveis, i);
     }
     #endregion
+
+    #region ObterQuantidadeIngressosDisponíveis
+    [TestMethod]
+    public void ObterQuantidadeIngressosDisponiveis_Deve_Retornar_Diferenca_Entre_Maximo_E_Vendidos()
+    {
+        // Arrange
+        sessao = new(inicioPadrao, 10, filmePadrao, salaPadrao);
+
+        for (int i = 1; i <= 5; i++)
+            sessao.GerarIngresso(i, false);
+
+        // Act
+        int quantidadeDisponivel = sessao.ObterQuantidadeIngressosDisponiveis();
+
+        // Assert
+        Assert.AreEqual(5, quantidadeDisponivel);
+    }
+    #endregion
 }
