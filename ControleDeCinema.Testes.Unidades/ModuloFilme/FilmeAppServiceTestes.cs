@@ -128,4 +128,103 @@ public class FilmeAppServiceTestes
     }
     #endregion
 
+    #region Testes Edição
+    [TestMethod]
+    public void Editar_Filme_Deve_Retornar_Sucesso()
+    {
+        // Arrange
+        GeneroFilme novoGenero = Builder<GeneroFilme>.CreateNew()
+            .With(g => g.Id = Guid.NewGuid())
+            .With(g => g.Descricao = "Românce")
+            .Build();
+
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, novoGenero);
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Filme>() { novoFilme });
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistroPorId(novoFilme.Id))
+            .Returns(novoFilme);
+
+        Filme filmeEditado = new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao);
+
+        // Act
+        Result resultadoEdicao = filmeAppService.Editar(novoFilme.Id, filmeEditado);
+
+        // Assert
+        repositorioFilmeMock.Verify(r => r.Editar(novoFilme.Id, filmeEditado), Times.Once);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Once);
+
+        Assert.IsNotNull(resultadoEdicao);
+        Assert.IsTrue(resultadoEdicao.IsSuccess);
+    }
+
+    [TestMethod]
+    public void Editar_Filme_Duplicado_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        List<Filme> filmesExistentes = new()
+        {
+            novoFilme,
+            new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao)
+        };
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(filmesExistentes);
+
+        Filme filmeEditado = new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao);
+
+        // Act
+        Result resultadoEdicao = filmeAppService.Editar(novoFilme.Id, filmeEditado);
+
+        // Assert
+        repositorioFilmeMock.Verify(r => r.Editar(novoFilme.Id, filmeEditado), Times.Never);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoEdicao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoEdicao);
+        Assert.IsTrue(resultadoEdicao.IsFailed);
+        Assert.AreEqual("Registro duplicado", mensagemErro);
+    }
+
+    [TestMethod]
+    public void Editar_Filme_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Filme>() { novoFilme });
+
+        Filme filmeEditado = new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao);
+
+        repositorioFilmeMock
+            .Setup(r => r.Editar(novoFilme.Id, filmeEditado))
+            .Throws(new Exception("Erro inesperado"));
+
+        unitOfWorkMock
+            .Setup(u => u.Commit())
+            .Throws(new Exception("Erro na edição"));
+
+        // Act
+        Result resultadoEdicao = filmeAppService.Editar(novoFilme.Id, filmeEditado);
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Rollback(), Times.Once);
+
+        string mensagemErro = resultadoEdicao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoEdicao);
+        Assert.IsTrue(resultadoEdicao.IsFailed);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
+    }
+    #endregion
+
 }
