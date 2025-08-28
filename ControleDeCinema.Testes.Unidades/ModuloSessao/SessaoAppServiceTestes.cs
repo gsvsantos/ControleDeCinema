@@ -9,6 +9,7 @@ using FizzWare.NBuilder;
 using FluentResults;
 using Microsoft.Extensions.Logging;
 using Moq;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ControleDeCinema.Testes.Unidades.ModuloSessao;
 
@@ -620,6 +621,149 @@ public class SessaoAppServiceTestes
         Assert.IsNull(sessoesSelecionadas);
         CollectionAssert.AreNotEquivalent(sessoesExistentes, sessoesSelecionadas);
         Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
+    }
+    #endregion
+
+    #region Testes Encerrar
+    [TestMethod]
+    public void Encerrar_Sessao_Deve_Retornar_Sucesso()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
+
+        // Act
+        Result resultadoEncerramento = sessaoAppService.Encerrar(novaSessao.Id);
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistroPorId(novaSessao.Id), Times.Once);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Once);
+
+        Assert.IsNotNull(resultadoEncerramento);
+        Assert.IsTrue(resultadoEncerramento.IsSuccess);
+        Assert.IsTrue(novaSessao.Encerrada);
+    }
+
+    [TestMethod]
+    public void Encerrar_Sessao_Inexistente_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
+
+        // Act
+        Result resultadoEncerramento = sessaoAppService.Encerrar(Guid.NewGuid());
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.SelecionarRegistroPorId(novaSessao.Id), Times.Never);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoEncerramento.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoEncerramento);
+        Assert.IsTrue(resultadoEncerramento.IsFailed);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
+    }
+
+    [TestMethod]
+    public void Encerrar_Sessao_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Throws(new Exception("Erro inesperado"));
+
+        // Act
+        Result resultadoEncerramento = sessaoAppService.Encerrar(novaSessao.Id);
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Rollback(), Times.Once);
+
+        string mensagemErro = resultadoEncerramento.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoEncerramento);
+        Assert.IsTrue(resultadoEncerramento.IsFailed);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
+    }
+    #endregion
+
+    #region Testes Venda de Ingresso
+    [TestMethod]
+    public void VenderIngresso_Deve_Retornar_Sucesso()
+    {
+        // Arrange  (sessao válida, lugar livre, não encerrada, disponibilidade > 0)
+
+        // Act
+
+        // Assert
+    }
+
+    [TestMethod]
+    public void VenderIngresso_Sessao_Inexistente_Deve_Retornar_Falha()
+    {
+        // Arrange  (repositório retorna null)
+
+        // Act
+
+        // Assert
+    }
+
+    [TestMethod]
+    public void VenderIngresso_Sessao_Encerrada_Deve_Retornar_Falha()
+    {
+        // Arrange  (sessao.Encerrada == true)
+
+        // Act
+
+        // Assert
+    }
+
+    [TestMethod]
+    public void VenderIngresso_Assento_Invalido_Deve_Retornar_Falha()
+    {
+        // Arrange  (assento < 1 ou > NumeroMaximoIngressos)
+
+        // Act
+
+        // Assert
+    }
+
+    [TestMethod]
+    public void VenderIngresso_Assento_Ocupado_Deve_Retornar_Falha()
+    {
+        // Arrange  (sessao.Ingressos contém assento)
+
+        // Act
+
+        // Assert
+    }
+
+    [TestMethod]
+    public void VenderIngresso_Sessao_Lotada_Deve_Retornar_Falha()
+    {
+        // Arrange  (ObterQuantidadeIngressosDisponiveis() == 0)
+
+        // Act
+
+        // Assert
+    }
+
+    [TestMethod]
+    public void VenderIngresso_Com_Excecao_Lancada_Deve_Retornar_Falha()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
     }
     #endregion
 }
