@@ -346,6 +346,7 @@ public class FilmeAppServiceTestes
 
         // Assert
         repositorioFilmeMock.Verify(r => r.SelecionarRegistroPorId(novoFilme.Id), Times.Once);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
 
         string mensagemErro = resultadoSelecao.Errors[0].Message;
 
