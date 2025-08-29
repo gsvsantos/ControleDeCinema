@@ -13,6 +13,8 @@ public class AutenticacaoAppServiceTestes
 {
     // SUT
     private AutenticacaoAppService autenticacaoAppService;
+
+    // TDB
     private const string emailPadrao = "emailTeste@teste.com";
     private const string senhaPadrao = "Teste123!";
     private const string userNamePadrao = emailPadrao;
@@ -21,7 +23,7 @@ public class AutenticacaoAppServiceTestes
     private readonly Cargo cargoPadrao = new()
     { Name = TipoUsuario.Cliente.ToString(), NormalizedName = tipoUsuarioPadrao.ToString().ToUpper(), ConcurrencyStamp = Guid.NewGuid().ToString() };
 
-    // Mocks
+    // MOCK
     private Mock<UserManager<Usuario>> userManagerMock;
     private Mock<SignInManager<Usuario>> signInManagerMock;
     private Mock<RoleManager<Cargo>> roleManagerMock;
@@ -95,7 +97,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Registrar_Com_Usuario_Duplicado_Deve_Retornar_Falha()
     {
-        // Arrange  (CreateAsync falha com DuplicateUserName)
+        // Arrange 
         Usuario novoUsuario = new()
         {
             UserName = userNamePadrao,
@@ -137,7 +139,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Registrar_Com_Email_Duplicado_Deve_Retornar_Falha()
     {
-        // Arrange  (CreateAsync falha com DuplicateEmail)
+        // Arrange
         Usuario novoUsuario = new()
         {
             UserName = "outroUserName",
@@ -177,7 +179,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Registrar_Com_Senha_Invalida_Deve_Retornar_Falha()
     {
-        // Arrange  (CreateAsync falha com erros de senha: PasswordTooShort/Requires...)
+        // Arrange
         Usuario novoUsuario = new()
         {
             UserName = "outroUserName",
@@ -229,7 +231,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Registrar_Cria_Cargo_Quando_Inexistente_E_Atribui_Ao_Usuario()
     {
-        // Arrange  (FindByNameAsync retorna null; CreateAsync de role chamado; AddToRoleAsync chamado)
+        // Arrange
         Usuario novoUsuario = new()
         {
             UserName = userNamePadrao,
@@ -274,7 +276,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Registrar_Chama_Login_Apos_Criar_Usuario()
     {
-        // Arrange  (CreateAsync ok; AddToRoleAsync ok; PasswordSignInAsync deve ser chamado)
+        // Arrange
         Usuario novoUsuario = new()
         {
             UserName = userNamePadrao,
@@ -315,7 +317,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Login_Deve_Retornar_Sucesso()
     {
-        // Arrange  (PasswordSignInAsync => Succeeded)
+        // Arrange
         signInManagerMock
             .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
             .ReturnsAsync(SignInResult.Success);
@@ -331,7 +333,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Login_Com_Conta_Bloqueada_Deve_Retornar_Falha()
     {
-        // Arrange  (IsLockedOut)
+        // Arrange
         signInManagerMock
             .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
             .ReturnsAsync(SignInResult.LockedOut);
@@ -354,7 +356,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Login_Nao_Permitido_Deve_Retornar_Falha()
     {
-        // Arrange  (IsNotAllowed)
+        // Arrange
         signInManagerMock
             .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
             .ReturnsAsync(SignInResult.NotAllowed);
@@ -377,7 +379,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Login_Requer_Dois_Fatores_Deve_Retornar_Falha()
     {
-        // Arrange  (RequiresTwoFactor)
+        // Arrange
         signInManagerMock
             .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
             .ReturnsAsync(SignInResult.TwoFactorRequired);
@@ -400,7 +402,7 @@ public class AutenticacaoAppServiceTestes
     [TestMethod]
     public async Task Login_Com_Credenciais_Invalidas_Deve_Retornar_Falha()
     {
-        // Arrange  (todas flags false; Succeeded false)
+        // Arrange
         signInManagerMock
             .Setup(p => p.PasswordSignInAsync(emailPadrao, senhaPadrao, true, false))
             .ReturnsAsync(SignInResult.Failed);

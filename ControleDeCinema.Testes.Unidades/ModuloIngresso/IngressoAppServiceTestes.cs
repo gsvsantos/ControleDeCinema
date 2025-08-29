@@ -17,6 +17,8 @@ public class IngressoAppServiceTestes
 {
     // SUT
     private IngressoAppService ingressoAppService;
+
+    // TDB
     private static readonly GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
         .WithFactory(() => new("Comédia") { Id = Guid.NewGuid() })
         .Build();
@@ -31,7 +33,7 @@ public class IngressoAppServiceTestes
         .WithFactory(() => new(inicioPadrao, 30, filmePadrao, salaPadrao))
         .Build();
 
-    // Mocks
+    // MOCK
     private Mock<ITenantProvider> tenantProviderMock;
     private Mock<IRepositorioIngresso> repositorioIngressoMock;
     private Mock<ILogger<IngressoAppService>> loggerMock;

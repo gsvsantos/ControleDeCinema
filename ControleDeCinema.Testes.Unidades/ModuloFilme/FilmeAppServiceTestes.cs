@@ -1,8 +1,11 @@
 using ControledeCinema.Dominio.Compartilhado;
 using ControleDeCinema.Aplicacao.ModuloFilme;
+using ControleDeCinema.Aplicacao.ModuloSessao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloFilme;
 using ControleDeCinema.Dominio.ModuloGeneroFilme;
+using ControleDeCinema.Dominio.ModuloSala;
+using ControleDeCinema.Dominio.ModuloSessao;
 using FizzWare.NBuilder;
 using FluentResults;
 using Microsoft.Extensions.Logging;
@@ -14,13 +17,16 @@ namespace ControleDeCinema.Testes.Unidades.ModuloFilme;
 [TestCategory("Testes de Unidade de FilmeAppService")]
 public class FilmeAppServiceTestes
 {
+    // SUT
     private FilmeAppService filmeAppService;
+
+    // TDB
     private static GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
         .With(d => d.Id = Guid.NewGuid())
         .With(d => d.Descricao = "Comédia")
         .Build();
 
-    // Mocks
+    // MOCK
     private Mock<ITenantProvider> tenantProviderMock;
     private Mock<IRepositorioFilme> repositorioFilmeMock;
     private Mock<IUnitOfWork> unitOfWorkMock;
@@ -243,6 +249,37 @@ public class FilmeAppServiceTestes
 
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsSuccess);
+    }
+
+    [TestMethod]
+    public void Excluir_Filme_Inexistente_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Filme novoFilme = new("Esposa de Mentirinha", 117, true, generoPadrao);
+
+        repositorioFilmeMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Filme>() { novoFilme });
+
+        repositorioFilmeMock
+            .Setup(r => r.Excluir(Guid.NewGuid()))
+            .Returns(false);
+
+        unitOfWorkMock
+            .Setup(u => u.Commit())
+            .Throws(new Exception("Erro na exclusão"));
+
+        // Act
+        Result resultadoExclusao = filmeAppService.Excluir(Guid.NewGuid());
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoExclusao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoExclusao);
+        Assert.IsTrue(resultadoExclusao.IsFailed);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
     }
 
     [TestMethod]

@@ -16,7 +16,10 @@ namespace ControleDeCinema.Testes.Unidades.ModuloSessao;
 [TestCategory("Testes de Unidade de SessaoAppService")]
 public class SessaoAppServiceTestes
 {
+    // SUT
     private SessaoAppService sessaoAppService;
+
+    // TDB
     private static readonly GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
         .WithFactory(() => new("Comédia") { Id = Guid.NewGuid() })
         .Build();
@@ -27,8 +30,9 @@ public class SessaoAppServiceTestes
         .WithFactory(() => new Sala(1, 30) { Id = Guid.NewGuid() })
         .Build();
     private static readonly DateTime inicioPadrao = new(2025, 08, 09, 14, 30, 00);
+    // OBS: (filmePadrao tem 1h57 minutos, inicioPadrao é as 14:30 | 16:26 nega submits, 16:27 aceita submits)
 
-    // Mocks
+    // MOCK
     private Mock<ITenantProvider> tenantProviderMock;
     private Mock<IRepositorioSessao> repositorioSessaoMock;
     private Mock<IUnitOfWork> unitOfWorkMock;
@@ -75,7 +79,7 @@ public class SessaoAppServiceTestes
     [TestMethod]
     public void Cadastrar_Sessao_Com_Capacidade_Excedida_Deve_Retornar_Falha()
     {
-        // Arrange (salaPadrao capacidade = 30)
+        // Arrange
         Sessao novaSessao = new(inicioPadrao, 40, filmePadrao, salaPadrao);
 
         repositorioSessaoMock
@@ -99,7 +103,7 @@ public class SessaoAppServiceTestes
     [TestMethod]
     public void Cadastrar_Sessao_Duplicada_Mesma_Sala_E_Horario_Deve_Retornar_Falha()
     {
-        // Arrange  (filmePadrao tem 1h57 minutos, inicioPadrao é as 14:30 | 16:26 nega cadastro, 16:27 aceita cadastro)
+        // Arrange
         repositorioSessaoMock
             .Setup(r => r.SelecionarRegistros())
             .Returns(new List<Sessao>() { new(inicioPadrao, 30, filmePadrao, salaPadrao) });
@@ -193,7 +197,7 @@ public class SessaoAppServiceTestes
     [TestMethod]
     public void Editar_Sessao_Com_Capacidade_Excedida_Deve_Retornar_Falha()
     {
-        // Arrange  (salaPadrao capacidade = 30)
+        // Arrange
         Sessao novaSessao = new(inicioPadrao, 15, filmePadrao, salaPadrao);
 
         repositorioSessaoMock
@@ -219,7 +223,7 @@ public class SessaoAppServiceTestes
     [TestMethod]
     public void Editar_Sessao_Duplicada_Mesma_Sala_E_Horario_Deve_Retornar_Falha()
     {
-        // Arrange  (filmePadrao tem 1h57 minutos, inicioPadrao é as 14:30 | 16:26 nega edição, 16:27 aceita edição)
+        // Arrange
         Sessao novaSessao = new(inicioPadrao, 15, filmePadrao, salaPadrao);
 
         DateTime novoInicio = new(2025, 08, 09, 16, 26, 00);
@@ -782,7 +786,7 @@ public class SessaoAppServiceTestes
     [TestMethod]
     public void VenderIngresso_Assento_Invalido_Deve_Retornar_Falha()
     {
-        // Arrange  (assento < 1 ou > NumeroMaximoIngressos)
+        // Arrange
         Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
 
         repositorioSessaoMock

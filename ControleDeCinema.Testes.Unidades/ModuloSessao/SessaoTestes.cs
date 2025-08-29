@@ -10,6 +10,10 @@ namespace ControleDeCinema.Testes.Unidades.ModuloSessao;
 [TestCategory("Testes de Unidade de Sessao (Domínio)")]
 public class SessaoTestes
 {
+    // SUT
+    private Sessao sessao;
+
+    // TDB
     private static readonly GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
         .WithFactory(() => new("Comédia") { Id = Guid.NewGuid() })
         .Build();
@@ -20,8 +24,6 @@ public class SessaoTestes
         .WithFactory(() => new Sala(1, 30) { Id = Guid.NewGuid() })
         .Build();
     private static readonly DateTime inicioPadrao = new(2025, 08, 09, 14, 30, 00);
-
-    private Sessao sessao;
 
     #region GerarIngresso
     [TestMethod]
