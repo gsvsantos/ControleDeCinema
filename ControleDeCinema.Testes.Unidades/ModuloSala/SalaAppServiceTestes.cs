@@ -1,9 +1,7 @@
 using ControledeCinema.Dominio.Compartilhado;
 using ControleDeCinema.Aplicacao.ModuloSala;
-using ControleDeCinema.Aplicacao.ModuloSessao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloSala;
-using ControleDeCinema.Dominio.ModuloSessao;
 using FluentResults;
 using Microsoft.Extensions.Logging;
 using Moq;

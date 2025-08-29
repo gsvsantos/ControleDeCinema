@@ -1,11 +1,8 @@
 using ControledeCinema.Dominio.Compartilhado;
 using ControleDeCinema.Aplicacao.ModuloFilme;
-using ControleDeCinema.Aplicacao.ModuloSessao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloFilme;
 using ControleDeCinema.Dominio.ModuloGeneroFilme;
-using ControleDeCinema.Dominio.ModuloSala;
-using ControleDeCinema.Dominio.ModuloSessao;
 using FizzWare.NBuilder;
 using FluentResults;
 using Microsoft.Extensions.Logging;
