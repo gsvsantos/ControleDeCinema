@@ -1,7 +1,9 @@
 using ControledeCinema.Dominio.Compartilhado;
 using ControleDeCinema.Aplicacao.ModuloSala;
+using ControleDeCinema.Aplicacao.ModuloSessao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloSala;
+using ControleDeCinema.Dominio.ModuloSessao;
 using FluentResults;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -233,6 +235,33 @@ public class SalaAppServiceTestes
 
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsSuccess);
+    }
+
+    [TestMethod]
+    public void Excluir_Sala_Inexistente_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Sala novaSala = new(1, 15);
+
+        repositorioSalaMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Sala>() { novaSala });
+
+        repositorioSalaMock
+            .Setup(r => r.Excluir(Guid.NewGuid()))
+            .Returns(false);
+
+        // Act
+        Result resultadoExclusao = salaAppService.Excluir(novaSala.Id);
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoExclusao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoExclusao);
+        Assert.IsTrue(resultadoExclusao.IsFailed);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
     }
 
     [TestMethod]

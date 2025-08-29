@@ -1,6 +1,8 @@
 using ControledeCinema.Dominio.Compartilhado;
+using ControleDeCinema.Aplicacao.ModuloFilme;
 using ControleDeCinema.Aplicacao.ModuloGeneroFilme;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
+using ControleDeCinema.Dominio.ModuloFilme;
 using ControleDeCinema.Dominio.ModuloGeneroFilme;
 using FluentResults;
 using Microsoft.Extensions.Logging;
@@ -233,6 +235,37 @@ public class GeneroFilmeAppServiceTestes
 
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsSuccess);
+    }
+
+    [TestMethod]
+    public void Excluir_GeneroFilme_Inexistente_Deve_Retornar_Falha()
+    {
+        // Arrange
+        GeneroFilme novoGenero = new("Comédia");
+
+        repositorioGeneroFilmeMock
+            .Setup(r => r.SelecionarRegistros())
+            .Returns(new List<GeneroFilme>() { novoGenero });
+
+        repositorioGeneroFilmeMock
+            .Setup(r => r.Excluir(Guid.NewGuid()))
+            .Returns(false);
+
+        unitOfWorkMock
+            .Setup(u => u.Commit())
+            .Throws(new Exception("Erro na exclusão"));
+
+        // Act
+        Result resultadoExclusao = generoFilmeAppService.Excluir(Guid.NewGuid());
+
+        // Assert
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoExclusao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoExclusao);
+        Assert.IsTrue(resultadoExclusao.IsFailed);
+        Assert.AreEqual("Registro não encontrado", mensagemErro);
     }
 
     [TestMethod]
