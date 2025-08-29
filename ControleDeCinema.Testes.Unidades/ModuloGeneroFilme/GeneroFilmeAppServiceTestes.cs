@@ -12,8 +12,10 @@ namespace ControleDeCinema.Testes.Unidades.ModuloGeneroFilme;
 [TestCategory("Testes de Unidade de GeneroFilmeAppService")]
 public class GeneroFilmeAppServiceTestes
 {
+    // SUT
     private GeneroFilmeAppService generoFilmeAppService;
 
+    // MOCK
     private Mock<ITenantProvider> tenantProviderMock;
     private Mock<IRepositorioGeneroFilme> repositorioGeneroFilmeMock;
     private Mock<IUnitOfWork> unitOfWorkMock;
@@ -91,7 +93,6 @@ public class GeneroFilmeAppServiceTestes
             .Setup(r => r.SelecionarRegistros())
             .Returns(new List<GeneroFilme>());
 
-        // Força resultar exceptions
         repositorioGeneroFilmeMock
             .Setup(r => r.Cadastrar(novoGenero))
             .Throws(new Exception("Erro inesperado"));

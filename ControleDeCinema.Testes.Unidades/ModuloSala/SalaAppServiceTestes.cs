@@ -15,7 +15,7 @@ public class SalaAppServiceTestes
     // SUT
     private SalaAppService salaAppService;
 
-    // Mocks
+    // MOCK
     private Mock<ITenantProvider> tenantProviderMock;
     private Mock<IRepositorioSala> repositorioSalaMock;
     private Mock<IUnitOfWork> unitOfWorkMock;
