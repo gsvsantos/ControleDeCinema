@@ -14,13 +14,16 @@ namespace ControleDeCinema.Testes.Unidades.ModuloFilme;
 [TestCategory("Testes de Unidade de FilmeAppService")]
 public class FilmeAppServiceTestes
 {
+    // SUT
     private FilmeAppService filmeAppService;
+
+    // TDB
     private static GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
         .With(d => d.Id = Guid.NewGuid())
         .With(d => d.Descricao = "Comédia")
         .Build();
 
-    // Mocks
+    // MOCK
     private Mock<ITenantProvider> tenantProviderMock;
     private Mock<IRepositorioFilme> repositorioFilmeMock;
     private Mock<IUnitOfWork> unitOfWorkMock;
