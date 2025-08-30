@@ -224,6 +224,10 @@ public class GeneroFilmeAppServiceTestes
             .Setup(r => r.SelecionarRegistroPorId(novoGenero.Id))
             .Returns(novoGenero);
 
+        repositorioGeneroFilmeMock
+            .Setup(r => r.Excluir(novoGenero.Id))
+            .Returns(true);
+
         // Act
         Result resultadoExclusao = generoFilmeAppService.Excluir(novoGenero.Id);
 

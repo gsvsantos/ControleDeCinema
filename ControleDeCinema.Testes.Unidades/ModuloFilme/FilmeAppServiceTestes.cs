@@ -237,6 +237,10 @@ public class FilmeAppServiceTestes
             .Setup(r => r.SelecionarRegistroPorId(novoFilme.Id))
             .Returns(novoFilme);
 
+        repositorioFilmeMock
+            .Setup(r => r.Excluir(novoFilme.Id))
+            .Returns(true);
+
         // Act
         Result resultadoExclusao = filmeAppService.Excluir(novoFilme.Id);
 
@@ -261,10 +265,6 @@ public class FilmeAppServiceTestes
         repositorioFilmeMock
             .Setup(r => r.Excluir(Guid.NewGuid()))
             .Returns(false);
-
-        unitOfWorkMock
-            .Setup(u => u.Commit())
-            .Throws(new Exception("Erro na exclusão"));
 
         // Act
         Result resultadoExclusao = filmeAppService.Excluir(Guid.NewGuid());

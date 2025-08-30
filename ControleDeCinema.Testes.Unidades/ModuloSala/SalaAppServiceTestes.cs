@@ -224,6 +224,10 @@ public class SalaAppServiceTestes
             .Setup(r => r.SelecionarRegistroPorId(novaSala.Id))
             .Returns(novaSala);
 
+        repositorioSalaMock
+            .Setup(r => r.Excluir(novaSala.Id))
+            .Returns(true);
+
         // Act
         Result resultadoExclusao = salaAppService.Excluir(novaSala.Id);
 
