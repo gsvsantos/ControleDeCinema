@@ -14,7 +14,7 @@ namespace ControleDeCinema.Testes.Interface.Compartilhado;
 [TestClass]
 public abstract class TestFixture
 {
-    // inicia driver e endereÃ§o base
+    // inicia driver e endereço base
     protected static ControleDeCinemaDbContext dbContext;
     protected static IWebDriver driver;
     protected static string enderecoBase;
@@ -68,7 +68,7 @@ public abstract class TestFixture
     public virtual void InicializarTeste()
     {
         if (dbContainer is null)
-            throw new ArgumentNullException("O banco de dados nÃ£o foi inicializado corretamente.");
+            throw new ArgumentNullException("O banco de dados não foi inicializado corretamente.");
 
         dbContext = ControleDeCinemaDbContextFactory.CriarDbContext(dbContainer.GetConnectionString());
 

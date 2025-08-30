@@ -71,7 +71,7 @@ public class SessaoIndexPageObject
 
     public bool ContemSessao(string tituloFilme)
     {
-        return driver.PageSource.Contains($"SessÃ£o para {tituloFilme}");
+        return driver.PageSource.Contains($"Sessão para {tituloFilme}");
     }
 
     public bool ContemInicio(string inicio)
@@ -119,6 +119,6 @@ public class SessaoIndexPageObject
         IWebElement ingressosDisponiveis = wait.Until(d => d.FindElement(By.CssSelector("input[data-se='ingressosDisponiveis']")));
         int value = Convert.ToInt32(ingressosDisponiveis.GetAttribute(attributeName: "value"));
 
-        return driver.PageSource.Contains("Ingressos disponÃ­veis:") && value == quantidadeDisponivel;
+        return driver.PageSource.Contains("Ingressos disponíveis:") && value == quantidadeDisponivel;
     }
 }
