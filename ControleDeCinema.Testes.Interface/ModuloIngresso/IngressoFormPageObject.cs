@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Testes.Interface.ModuloSessao;
+using ControleDeCinema.Testes.Interface.ModuloSessao;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Collections.ObjectModel;

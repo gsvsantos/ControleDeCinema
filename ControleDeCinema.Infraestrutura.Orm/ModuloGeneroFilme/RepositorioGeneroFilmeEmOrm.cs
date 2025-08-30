@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloGeneroFilme;
+using ControleDeCinema.Dominio.ModuloGeneroFilme;
 using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 
 namespace ControleDeCinema.Infraestrutura.Orm.ModuloGeneroFilme;

@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Globalization;
 
@@ -71,14 +71,19 @@ public class SessaoIndexPageObject
 
     public bool ContemSessao(string tituloFilme)
     {
-        return driver.PageSource.Contains($"Sessão para {tituloFilme}");
+        return driver.PageSource.Contains($"SessÃ£o para {tituloFilme}");
     }
 
     public bool ContemInicio(string inicio)
     {
         DateTime dataInicio = DateTime.ParseExact(inicio, "yyyy-MM-dd'T'HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None);
 
-        return driver.PageSource.Contains(dataInicio.ToString());
+        var dataFormatadaPtBr = dataInicio.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("pt-BR"));
+
+        var dataFormatadaEnUs = dataInicio.ToString("M/d/yyyy h:mm:ss tt", new CultureInfo("en-US"));
+
+        return driver.PageSource.Contains($"value=\"{dataFormatadaPtBr}\"") ||
+               driver.PageSource.Contains($"value=\"{dataFormatadaEnUs}\"");
     }
 
     public bool ContemMaxIngressos(int numeroMaximoIngressos)
@@ -114,6 +119,6 @@ public class SessaoIndexPageObject
         IWebElement ingressosDisponiveis = wait.Until(d => d.FindElement(By.CssSelector("input[data-se='ingressosDisponiveis']")));
         int value = Convert.ToInt32(ingressosDisponiveis.GetAttribute(attributeName: "value"));
 
-        return driver.PageSource.Contains("Ingressos disponíveis:") && value == quantidadeDisponivel;
+        return driver.PageSource.Contains("Ingressos disponÃ­veis:") && value == quantidadeDisponivel;
     }
 }

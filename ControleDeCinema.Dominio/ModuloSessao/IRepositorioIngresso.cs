@@ -1,4 +1,4 @@
-﻿namespace ControleDeCinema.Dominio.ModuloSessao;
+namespace ControleDeCinema.Dominio.ModuloSessao;
 
 public interface IRepositorioIngresso
 {

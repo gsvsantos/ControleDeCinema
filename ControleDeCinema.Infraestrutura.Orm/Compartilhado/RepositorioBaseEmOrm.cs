@@ -1,4 +1,4 @@
-﻿using ControledeCinema.Dominio.Compartilhado;
+using ControledeCinema.Dominio.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 
 namespace ControleDeCinema.Infraestrutura.Orm.Compartilhado;

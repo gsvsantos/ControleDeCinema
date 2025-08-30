@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloSessao;
+using ControleDeCinema.Dominio.ModuloSessao;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

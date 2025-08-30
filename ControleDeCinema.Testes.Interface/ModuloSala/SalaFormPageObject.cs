@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Collections.ObjectModel;
 
@@ -80,15 +80,24 @@ public class SalaFormPageObject
         wait.Until(d => d.FindElement(By.CssSelector("button[data-se='btnConfirmar']"))).Click();
         wait.Until(d =>
         {
-            bool segueNoFormulario = d.FindElement(By.CssSelector("form[data-se='form']")).Displayed;
+            if (d.FindElements(By.CssSelector("form[data-se='form']")).Count == 0)
+                return false;
 
             ReadOnlyCollection<IWebElement> spans = d.FindElements(By.CssSelector("span[data-valmsg-for]"));
             bool temMensagemCampo = spans.Any(s => !string.IsNullOrWhiteSpace(s.Text));
 
             ReadOnlyCollection<IWebElement> alerts = d.FindElements(By.CssSelector("div.alert[role='alert']"));
-            bool temMensagemGeral = alerts.Any(a => a.Displayed && !string.IsNullOrWhiteSpace(a.Text));
+            bool temMensagemGeral = alerts.Any(a =>
+            {
+                try
+                {
+                    string style = a.GetCssValue("display");
+                    return style != "none" && !string.IsNullOrWhiteSpace(a.Text);
+                }
+                catch (StaleElementReferenceException) { return false; }
+            });
 
-            return segueNoFormulario && (temMensagemCampo || temMensagemGeral);
+            return temMensagemCampo || temMensagemGeral;
         });
 
         return this;

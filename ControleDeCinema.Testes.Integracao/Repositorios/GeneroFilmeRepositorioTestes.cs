@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloGeneroFilme;
+using ControleDeCinema.Dominio.ModuloGeneroFilme;
 using ControleDeCinema.Testes.Integracao.Compartilhado;
 
 namespace ControleDeCinema.Testes.Integracao.Repositorios;

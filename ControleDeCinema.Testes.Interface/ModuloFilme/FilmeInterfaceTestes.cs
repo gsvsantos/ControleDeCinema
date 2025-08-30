@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Testes.Interface.Compartilhado;
+using ControleDeCinema.Testes.Interface.Compartilhado;
 using ControleDeCinema.Testes.Interface.ModuloGeneroFilme;
 
 namespace ControleDeCinema.Testes.Interface.ModuloFilme;

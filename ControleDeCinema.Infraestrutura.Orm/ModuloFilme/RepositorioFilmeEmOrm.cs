@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloFilme;
+using ControleDeCinema.Dominio.ModuloFilme;
 using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 

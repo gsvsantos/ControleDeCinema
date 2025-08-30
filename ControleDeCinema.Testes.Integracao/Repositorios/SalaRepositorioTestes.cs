@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloSala;
+using ControleDeCinema.Dominio.ModuloSala;
 using ControleDeCinema.Testes.Integracao.Compartilhado;
 
 namespace ControleDeCinema.Testes.Integracao.Repositorios;

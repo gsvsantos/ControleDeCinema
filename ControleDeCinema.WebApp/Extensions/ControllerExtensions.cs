@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.WebApp.Controllers;
+using ControleDeCinema.WebApp.Controllers;
 using ControleDeCinema.WebApp.Models;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;

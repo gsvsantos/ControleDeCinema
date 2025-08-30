@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Aplicacao.Compartilhado;
+using ControleDeCinema.Aplicacao.Compartilhado;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloSessao;
 using FluentResults;

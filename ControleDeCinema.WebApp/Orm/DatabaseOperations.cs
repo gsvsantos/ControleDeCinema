@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
+using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 
 namespace ControleDeCinema.WebApp.Orm;

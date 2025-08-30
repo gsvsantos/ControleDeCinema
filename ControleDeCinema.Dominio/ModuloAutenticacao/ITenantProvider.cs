@@ -1,4 +1,4 @@
-﻿namespace ControleDeCinema.Dominio.ModuloAutenticacao;
+namespace ControleDeCinema.Dominio.ModuloAutenticacao;
 
 public interface ITenantProvider
 {

@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Aplicacao.ModuloFilme;
+using ControleDeCinema.Aplicacao.ModuloFilme;
 using ControleDeCinema.Aplicacao.ModuloGeneroFilme;
 using ControleDeCinema.WebApp.Extensions;
 using ControleDeCinema.WebApp.Models;

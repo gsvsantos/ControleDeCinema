@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloAutenticacao;
+using ControleDeCinema.Dominio.ModuloAutenticacao;
 using System.Security.Claims;
 
 namespace ControleDeCinema.WebApp.Identity;

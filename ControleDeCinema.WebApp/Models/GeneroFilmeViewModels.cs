@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloGeneroFilme;
+using ControleDeCinema.Dominio.ModuloGeneroFilme;
 using System.ComponentModel.DataAnnotations;
 
 namespace ControleDeCinema.WebApp.Models;

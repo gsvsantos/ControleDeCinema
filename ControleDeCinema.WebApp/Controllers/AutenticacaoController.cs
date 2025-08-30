@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Aplicacao.ModuloAutenticacao;
+using ControleDeCinema.Aplicacao.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.WebApp.Extensions;
 using ControleDeCinema.WebApp.Models;

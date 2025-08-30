@@ -1,4 +1,4 @@
-﻿namespace ControledeCinema.Dominio.Compartilhado;
+namespace ControledeCinema.Dominio.Compartilhado;
 
 public interface IUnitOfWork // Padrão Unit of Work
 {

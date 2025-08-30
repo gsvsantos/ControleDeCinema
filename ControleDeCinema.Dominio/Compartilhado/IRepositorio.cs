@@ -1,4 +1,4 @@
-﻿namespace ControledeCinema.Dominio.Compartilhado;
+namespace ControledeCinema.Dominio.Compartilhado;
 
 public interface IRepositorio<T> where T : EntidadeBase<T>
 {

@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloSala;
+using ControleDeCinema.Dominio.ModuloSala;
 using System.ComponentModel.DataAnnotations;
 
 namespace ControleDeCinema.WebApp.Models;

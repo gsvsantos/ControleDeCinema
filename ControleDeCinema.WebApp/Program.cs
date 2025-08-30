@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Aplicacao.ModuloAutenticacao;
+using ControleDeCinema.Aplicacao.ModuloAutenticacao;
 using ControleDeCinema.Aplicacao.ModuloFilme;
 using ControleDeCinema.Aplicacao.ModuloGeneroFilme;
 using ControleDeCinema.Aplicacao.ModuloSala;

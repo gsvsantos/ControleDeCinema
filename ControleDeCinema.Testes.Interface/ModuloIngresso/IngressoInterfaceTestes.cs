@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Testes.Interface.Compartilhado;
+using ControleDeCinema.Testes.Interface.Compartilhado;
 using ControleDeCinema.Testes.Interface.ModuloFilme;
 using ControleDeCinema.Testes.Interface.ModuloGeneroFilme;
 using ControleDeCinema.Testes.Interface.ModuloSala;

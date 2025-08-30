@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloAutenticacao;
+using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 using ControleDeCinema.WebApp.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;

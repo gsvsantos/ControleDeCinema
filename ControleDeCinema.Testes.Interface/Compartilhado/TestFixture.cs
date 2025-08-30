@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
+using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
@@ -14,7 +14,7 @@ namespace ControleDeCinema.Testes.Interface.Compartilhado;
 [TestClass]
 public abstract class TestFixture
 {
-    // inicia driver e endereço base
+    // inicia driver e endereÃ§o base
     protected static ControleDeCinemaDbContext dbContext;
     protected static IWebDriver driver;
     protected static string enderecoBase;
@@ -68,7 +68,7 @@ public abstract class TestFixture
     public virtual void InicializarTeste()
     {
         if (dbContainer is null)
-            throw new ArgumentNullException("O banco de dados não foi inicializado corretamente.");
+            throw new ArgumentNullException("O banco de dados nÃ£o foi inicializado corretamente.");
 
         dbContext = ControleDeCinemaDbContextFactory.CriarDbContext(dbContainer.GetConnectionString());
 
@@ -116,21 +116,21 @@ public abstract class TestFixture
 
     private static async Task InicializarAplicacaoAsync()
     {
-        IFutureDockerImage image = new ImageFromDockerfileBuilder()
-            .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
-            .WithDockerfile("Dockerfile")
-            .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
-            .WithName("controle-de-cinema-db-e2e:latest")
-            .Build();
+        //IFutureDockerImage image = new ImageFromDockerfileBuilder()
+        //    .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
+        //    .WithDockerfile("Dockerfile")
+        //    .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
+        //    .WithName("controle-de-cinema-db-e2e:latest")
+        //    .Build();
 
-        await image.CreateAsync().ConfigureAwait(false);
+        //await image.CreateAsync().ConfigureAwait(false);
 
         string? connectionStringRede = dbContainer.GetConnectionString()
             .Replace(dbContainer.Hostname, "controle-de-cinema-db-e2e")
             .Replace(dbContainer.GetMappedPublicPort(dbPort).ToString(), "5432");
 
         appContainer = new ContainerBuilder()
-            .WithImage(image)
+            .WithImage("controledecinemawebapp:latest")
             .WithImagePullPolicy(PullPolicy.Never)
             .WithPortBinding(appPort, true)
             .WithNetwork(rede)

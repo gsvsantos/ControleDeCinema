@@ -1,4 +1,4 @@
-﻿namespace ControledeCinema.Dominio.Compartilhado;
+namespace ControledeCinema.Dominio.Compartilhado;
 
 public abstract class EntidadeBase<T>
 {

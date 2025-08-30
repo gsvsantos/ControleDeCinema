@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloSala;
+using ControleDeCinema.Dominio.ModuloSala;
 using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 
 namespace ControleDeCinema.Infraestrutura.Orm.ModuloSala;

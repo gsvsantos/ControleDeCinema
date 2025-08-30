@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloSessao;
+using ControleDeCinema.Dominio.ModuloSessao;
 using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 

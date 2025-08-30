@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloAutenticacao;
+using ControleDeCinema.Dominio.ModuloAutenticacao;
 using System.ComponentModel.DataAnnotations;
 
 namespace ControleDeCinema.WebApp.Models;

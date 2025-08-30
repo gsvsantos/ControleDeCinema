@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloFilme;
+using ControleDeCinema.Dominio.ModuloFilme;
 using ControleDeCinema.Dominio.ModuloGeneroFilme;
 using ControleDeCinema.Testes.Integracao.Compartilhado;
 using FizzWare.NBuilder;

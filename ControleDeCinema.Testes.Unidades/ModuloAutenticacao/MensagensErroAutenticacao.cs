@@ -1,4 +1,4 @@
-﻿namespace ControleDeCinema.Testes.Unidades.ModuloAutenticacao;
+namespace ControleDeCinema.Testes.Unidades.ModuloAutenticacao;
 
 public static class MensagensErroAutenticacao
 {

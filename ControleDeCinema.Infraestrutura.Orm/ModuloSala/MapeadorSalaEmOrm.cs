@@ -1,4 +1,4 @@
-﻿using ControleDeCinema.Dominio.ModuloSala;
+using ControleDeCinema.Dominio.ModuloSala;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
