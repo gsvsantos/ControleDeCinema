@@ -1,9 +1,9 @@
-using ControleDeCinema.Testes.Interface.Compartilhado;
+ï»¿using ControleDeCinema.Testes.Interface.Compartilhado;
 
 namespace ControleDeCinema.Testes.Interface.ModuloAutenticacao;
 
 [TestClass]
-[TestCategory("Testes de Interface de Autenticação")]
+[TestCategory("Testes de Interface de AutenticaÃ§Ã£o")]
 public sealed class AutenticacaoInterfaceTestes : TestFixture
 {
     [TestMethod]

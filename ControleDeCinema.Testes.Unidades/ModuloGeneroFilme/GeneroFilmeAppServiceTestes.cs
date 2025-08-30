@@ -1,4 +1,4 @@
-using ControledeCinema.Dominio.Compartilhado;
+Ôªøusing ControledeCinema.Dominio.Compartilhado;
 using ControleDeCinema.Aplicacao.ModuloGeneroFilme;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloGeneroFilme;
@@ -42,7 +42,7 @@ public class GeneroFilmeAppServiceTestes
     public void Cadastrar_GeneroFilme_Deve_Retornar_Sucesso()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistros())
@@ -65,9 +65,9 @@ public class GeneroFilmeAppServiceTestes
         // Arrange
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistros())
-            .Returns(new List<GeneroFilme>() { new("ComÈdia") });
+            .Returns(new List<GeneroFilme>() { new("Com√©dia") });
 
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         // Act
         Result resultadoCadastro = generoFilmeAppService.Cadastrar(novoGenero);
@@ -87,7 +87,7 @@ public class GeneroFilmeAppServiceTestes
     public void Cadastrar_GeneroFilme_Com_Excecao_Lancada_Deve_Retornar_Falha()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistros())
@@ -115,12 +115,12 @@ public class GeneroFilmeAppServiceTestes
     }
     #endregion
 
-    #region Testes EdiÁ„o
+    #region Testes Edi√ß√£o
     [TestMethod]
     public void Editar_GeneroFilme_Deve_Retornar_Sucesso()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistros())
@@ -130,7 +130,7 @@ public class GeneroFilmeAppServiceTestes
             .Setup(r => r.SelecionarRegistroPorId(novoGenero.Id))
             .Returns(novoGenero);
 
-        GeneroFilme generoEditado = new("ComÈdia Super Ingrasada");
+        GeneroFilme generoEditado = new("Com√©dia Super Ingrasada");
 
         // Act
         Result resultadoEdicao = generoFilmeAppService.Editar(novoGenero.Id, generoEditado);
@@ -147,19 +147,19 @@ public class GeneroFilmeAppServiceTestes
     public void Editar_GeneroFilme_Duplicada_Deve_Retornar_Falha()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         List<GeneroFilme> generosFilmeExistentes = new()
         {
             novoGenero,
-            new("ComÈdia Super Ingrasada")
+            new("Com√©dia Super Ingrasada")
         };
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistros())
             .Returns(generosFilmeExistentes);
 
-        GeneroFilme generoEditado = new("ComÈdia Super Ingrasada");
+        GeneroFilme generoEditado = new("Com√©dia Super Ingrasada");
 
         // Act
         Result resultadoEdicao = generoFilmeAppService.Editar(novoGenero.Id, generoEditado);
@@ -179,13 +179,13 @@ public class GeneroFilmeAppServiceTestes
     public void Editar_GeneroFilme_Com_Excecao_Lancada_Deve_Retornar_Falha()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistros())
             .Returns(new List<GeneroFilme> { novoGenero });
 
-        GeneroFilme generoEditado = new("ComÈdia Super Ingrasada");
+        GeneroFilme generoEditado = new("Com√©dia Super Ingrasada");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.Editar(novoGenero.Id, generoEditado))
@@ -193,7 +193,7 @@ public class GeneroFilmeAppServiceTestes
 
         unitOfWorkMock
             .Setup(u => u.Commit())
-            .Throws(new Exception("Erro na ediÁ„o"));
+            .Throws(new Exception("Erro na edi√ß√£o"));
 
         // Act
         Result resultadoEdicao = generoFilmeAppService.Editar(novoGenero.Id, generoEditado);
@@ -209,12 +209,12 @@ public class GeneroFilmeAppServiceTestes
     }
     #endregion
 
-    #region Testes Exclus„o
+    #region Testes Exclus√£o
     [TestMethod]
     public void Excluir_GeneroFilme_Deve_Retornar_Sucesso()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistros())
@@ -243,7 +243,7 @@ public class GeneroFilmeAppServiceTestes
     public void Excluir_GeneroFilme_Inexistente_Deve_Retornar_Falha()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistros())
@@ -255,7 +255,7 @@ public class GeneroFilmeAppServiceTestes
 
         unitOfWorkMock
             .Setup(u => u.Commit())
-            .Throws(new Exception("Erro na exclus„o"));
+            .Throws(new Exception("Erro na exclus√£o"));
 
         // Act
         Result resultadoExclusao = generoFilmeAppService.Excluir(Guid.NewGuid());
@@ -267,14 +267,14 @@ public class GeneroFilmeAppServiceTestes
 
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsFailed);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
 
     [TestMethod]
     public void Excluir_GeneroFilme_Com_Excecao_Lancada_Deve_Retornar_Falha()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistros())
@@ -286,7 +286,7 @@ public class GeneroFilmeAppServiceTestes
 
         unitOfWorkMock
             .Setup(r => r.Commit())
-            .Throws(new Exception("Erro na exclus„o"));
+            .Throws(new Exception("Erro na exclus√£o"));
 
         // Act
         Result resultadoExclusao = generoFilmeAppService.Excluir(novoGenero.Id);
@@ -302,12 +302,12 @@ public class GeneroFilmeAppServiceTestes
     }
     #endregion
 
-    #region Testes SeleÁ„o por Id
+    #region Testes Sele√ß√£o por Id
     [TestMethod]
     public void Selecionar_GeneroFilme_Por_Id_Deve_Retornar_Sucesso()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistroPorId(novoGenero.Id))
@@ -331,7 +331,7 @@ public class GeneroFilmeAppServiceTestes
     public void Selecionar_GeneroFilme_Por_Id_Id_Inexistente_Deve_Retornar_Falha()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistroPorId(novoGenero.Id))
@@ -351,14 +351,14 @@ public class GeneroFilmeAppServiceTestes
         Assert.IsTrue(resultadoSelecao.IsFailed);
         Assert.IsNull(generoSelecionado);
         Assert.AreNotEqual(novoGenero, generoSelecionado);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
 
     [TestMethod]
     public void Selecionar_GeneroFilme_Por_Id_Com_Excecao_Lancada_Deve_Retornar_Falha()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         repositorioGeneroFilmeMock
             .Setup(r => r.SelecionarRegistroPorId(novoGenero.Id))
@@ -382,17 +382,17 @@ public class GeneroFilmeAppServiceTestes
     }
     #endregion
 
-    #region Testes SeleÁ„o de Todos
+    #region Testes Sele√ß√£o de Todos
     [TestMethod]
     public void Selecionar_Todos_GenerosFilme_Deve_Retornar_Sucesso()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         List<GeneroFilme> generosFilmeExistentes = new()
         {
             novoGenero,
-            new("Rom‚nce")
+            new("Rom√¢nce")
         };
 
         repositorioGeneroFilmeMock
@@ -417,12 +417,12 @@ public class GeneroFilmeAppServiceTestes
     public void Selecionar_Todos_GenerosFilme_Com_Excecao_Lancada_Deve_Retornar_Falha()
     {
         // Arrange
-        GeneroFilme novoGenero = new("ComÈdia");
+        GeneroFilme novoGenero = new("Com√©dia");
 
         List<GeneroFilme> generosFilmeExistentes = new()
         {
             novoGenero,
-            new("Rom‚nce")
+            new("Rom√¢nce")
         };
 
         repositorioGeneroFilmeMock

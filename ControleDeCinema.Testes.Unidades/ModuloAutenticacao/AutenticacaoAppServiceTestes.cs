@@ -1,4 +1,4 @@
-using ControleDeCinema.Aplicacao.ModuloAutenticacao;
+Ôªøusing ControleDeCinema.Aplicacao.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
@@ -107,7 +107,7 @@ public class AutenticacaoAppServiceTestes
         IdentityError userDuplicateError = new()
         {
             Code = "DuplicateUserName",
-            Description = "J· existe um usu·rio com esse nome."
+            Description = "J√° existe um usu√°rio com esse nome."
         };
 
         userManagerMock
@@ -131,7 +131,7 @@ public class AutenticacaoAppServiceTestes
 
         Assert.IsNotNull(resultadoRegistro);
         Assert.IsTrue(resultadoRegistro.IsFailed);
-        Assert.AreEqual("RequisiÁ„o inv·lida", resultadoRegistro.Errors[0].Message);
+        Assert.AreEqual("Requisi√ß√£o inv√°lida", resultadoRegistro.Errors[0].Message);
         Assert.IsNotNull(mensagemDoResult);
         Assert.IsTrue(mensagemDoResult.Contains(mensagemEsperada));
     }
@@ -149,7 +149,7 @@ public class AutenticacaoAppServiceTestes
         IdentityError emailDuplicateError = new()
         {
             Code = "DuplicateEmail",
-            Description = "J· existe um usu·rio com esse e-mail."
+            Description = "J√° existe um usu√°rio com esse e-mail."
         };
 
         userManagerMock
@@ -171,7 +171,7 @@ public class AutenticacaoAppServiceTestes
 
         Assert.IsNotNull(resultadoRegistro);
         Assert.IsTrue(resultadoRegistro.IsFailed);
-        Assert.AreEqual("RequisiÁ„o inv·lida", resultadoRegistro.Errors[0].Message);
+        Assert.AreEqual("Requisi√ß√£o inv√°lida", resultadoRegistro.Errors[0].Message);
         Assert.IsNotNull(mensagemDoResult);
         Assert.AreEqual(mensagemEsperada, mensagemDoResult);
     }
@@ -188,11 +188,11 @@ public class AutenticacaoAppServiceTestes
 
         IdentityError[] passwordErrors =
         {
-            new() { Code = "PasswordTooShort", Description = "A senha È muito curta." },
+            new() { Code = "PasswordTooShort", Description = "A senha √© muito curta." },
             new() { Code = "PasswordRequiresNonAlphanumeric", Description = "A senha deve conter pelo menos um caractere especial." },
-            new() { Code = "PasswordRequiresDigit", Description = "A senha deve conter pelo menos um n˙mero." },
-            new() { Code = "PasswordRequiresUpper", Description = "A senha deve conter pelo menos uma letra mai˙scula." },
-            new() { Code = "PasswordRequiresLower", Description = "A senha deve conter pelo menos uma letra min˙scula." }
+            new() { Code = "PasswordRequiresDigit", Description = "A senha deve conter pelo menos um n√∫mero." },
+            new() { Code = "PasswordRequiresUpper", Description = "A senha deve conter pelo menos uma letra mai√∫scula." },
+            new() { Code = "PasswordRequiresLower", Description = "A senha deve conter pelo menos uma letra min√∫scula." }
         };
 
         userManagerMock
@@ -223,7 +223,7 @@ public class AutenticacaoAppServiceTestes
 
         Assert.IsNotNull(resultadoRegistro);
         Assert.IsTrue(resultadoRegistro.IsFailed);
-        Assert.AreEqual("RequisiÁ„o inv·lida", resultadoRegistro.Errors[0].Message);
+        Assert.AreEqual("Requisi√ß√£o inv√°lida", resultadoRegistro.Errors[0].Message);
         Assert.IsNotNull(mensagemDoResult);
         CollectionAssert.AreEquivalent(mensagensEsperadas, mensagemDoResult);
     }
@@ -348,7 +348,7 @@ public class AutenticacaoAppServiceTestes
 
         Assert.IsNotNull(resultadoLogin);
         Assert.IsTrue(resultadoLogin.IsFailed);
-        Assert.AreEqual("RequisiÁ„o inv·lida", resultadoLogin.Errors[0].Message);
+        Assert.AreEqual("Requisi√ß√£o inv√°lida", resultadoLogin.Errors[0].Message);
         Assert.IsNotNull(mensagemDoResult);
         Assert.AreEqual(mensagemEsperada, mensagemDoResult);
     }
@@ -371,7 +371,7 @@ public class AutenticacaoAppServiceTestes
 
         Assert.IsNotNull(resultadoLogin);
         Assert.IsTrue(resultadoLogin.IsFailed);
-        Assert.AreEqual("RequisiÁ„o inv·lida", resultadoLogin.Errors[0].Message);
+        Assert.AreEqual("Requisi√ß√£o inv√°lida", resultadoLogin.Errors[0].Message);
         Assert.IsNotNull(mensagemDoResult);
         Assert.AreEqual(mensagemEsperada, mensagemDoResult);
     }
@@ -394,7 +394,7 @@ public class AutenticacaoAppServiceTestes
 
         Assert.IsNotNull(resultadoLogin);
         Assert.IsTrue(resultadoLogin.IsFailed);
-        Assert.AreEqual("RequisiÁ„o inv·lida", resultadoLogin.Errors[0].Message);
+        Assert.AreEqual("Requisi√ß√£o inv√°lida", resultadoLogin.Errors[0].Message);
         Assert.IsNotNull(mensagemDoResult);
         Assert.AreEqual(mensagemEsperada, mensagemDoResult);
     }
@@ -417,7 +417,7 @@ public class AutenticacaoAppServiceTestes
 
         Assert.IsNotNull(resultadoLogin);
         Assert.IsTrue(resultadoLogin.IsFailed);
-        Assert.AreEqual("RequisiÁ„o inv·lida", resultadoLogin.Errors[0].Message);
+        Assert.AreEqual("Requisi√ß√£o inv√°lida", resultadoLogin.Errors[0].Message);
         Assert.IsNotNull(mensagemDoResult);
         Assert.AreEqual(mensagemEsperada, mensagemDoResult);
     }

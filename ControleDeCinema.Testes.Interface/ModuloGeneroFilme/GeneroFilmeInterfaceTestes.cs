@@ -1,9 +1,9 @@
-using ControleDeCinema.Testes.Interface.Compartilhado;
+Ôªøusing ControleDeCinema.Testes.Interface.Compartilhado;
 
 namespace ControleDeCinema.Testes.Interface.ModuloGeneroFilme;
 
 [TestClass]
-[TestCategory("Testes de Interface de GÍnero de Filme")]
+[TestCategory("Testes de Interface de G√™nero de Filme")]
 public sealed class GeneroFilmeInterfaceTestes : TestFixture
 {
     [TestInitialize]
@@ -28,11 +28,11 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
             .ClickCadastrar();
 
         generoFilmeForm
-            .PreencherDescricao("ComÈdia")
+            .PreencherDescricao("Com√©dia")
             .ClickSubmit();
 
         // Assert
-        Assert.IsTrue(generoFilmeIndex.ContemGenero("ComÈdia"));
+        Assert.IsTrue(generoFilmeIndex.ContemGenero("Com√©dia"));
     }
 
     [TestMethod]
@@ -44,7 +44,7 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("ComÈdia")
+            .PreencherDescricao("Com√©dia")
             .ClickSubmit();
 
         // Act
@@ -53,11 +53,11 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
             .ClickEditar();
 
         generoFilmeForm
-            .PreencherDescricao("Rom‚nce")
+            .PreencherDescricao("Rom√¢nce")
             .ClickSubmit();
 
         // Assert
-        Assert.IsTrue(generoFilmeIndex.ContemGenero("Rom‚nce"));
+        Assert.IsTrue(generoFilmeIndex.ContemGenero("Rom√¢nce"));
     }
 
     [TestMethod]
@@ -69,7 +69,7 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("ComÈdia")
+            .PreencherDescricao("Com√©dia")
             .ClickSubmit();
 
         // Act
@@ -78,10 +78,10 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
             .ClickExcluir();
 
         generoFilmeForm
-            .ClickSubmitExcluir("Rom‚nce");
+            .ClickSubmitExcluir("Rom√¢nce");
 
         // Assert
-        Assert.IsFalse(generoFilmeIndex.ContemGenero("Rom‚nce"));
+        Assert.IsFalse(generoFilmeIndex.ContemGenero("Rom√¢nce"));
     }
 
     [TestMethod]
@@ -93,13 +93,13 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("ComÈdia")
+            .PreencherDescricao("Com√©dia")
             .ClickSubmit();
 
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Rom‚nce")
+            .PreencherDescricao("Rom√¢nce")
             .ClickSubmit();
 
         // Act
@@ -107,8 +107,8 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
             .IrPara(enderecoBase);
 
         // Assert
-        Assert.IsTrue(generoFilmeIndex.ContemGenero("ComÈdia"));
-        Assert.IsTrue(generoFilmeIndex.ContemGenero("Rom‚nce"));
+        Assert.IsTrue(generoFilmeIndex.ContemGenero("Com√©dia"));
+        Assert.IsTrue(generoFilmeIndex.ContemGenero("Rom√¢nce"));
     }
 
     [TestMethod]
@@ -140,7 +140,7 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("ComÈdia")
+            .PreencherDescricao("Com√©dia")
             .ClickSubmit();
 
         // Act
@@ -149,7 +149,7 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
             .ClickCadastrar();
 
         generoFilmeForm
-            .PreencherDescricao("ComÈdia")
+            .PreencherDescricao("Com√©dia")
             .ClickSubmitEsperandoErros();
 
         // Assert

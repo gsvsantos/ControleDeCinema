@@ -1,4 +1,4 @@
-using ControledeCinema.Dominio.Compartilhado;
+Ôªøusing ControledeCinema.Dominio.Compartilhado;
 using ControleDeCinema.Aplicacao.ModuloSala;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloSala;
@@ -115,7 +115,7 @@ public class SalaAppServiceTestes
     }
     #endregion
 
-    #region Testes EdiÁ„o
+    #region Testes Edi√ß√£o
     [TestMethod]
     public void Editar_Sala_Deve_Retornar_Sucesso()
     {
@@ -193,7 +193,7 @@ public class SalaAppServiceTestes
 
         unitOfWorkMock
             .Setup(u => u.Commit())
-            .Throws(new Exception("Erro na ediÁ„o"));
+            .Throws(new Exception("Erro na edi√ß√£o"));
 
         // Act
         Result resultadoEdicao = salaAppService.Editar(novaSala.Id, salaEditada);
@@ -209,7 +209,7 @@ public class SalaAppServiceTestes
     }
     #endregion
 
-    #region Testes Exclus„o
+    #region Testes Exclus√£o
     [TestMethod]
     public void Excluir_Sala_Deve_Retornar_Sucesso()
     {
@@ -263,7 +263,7 @@ public class SalaAppServiceTestes
 
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsFailed);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
 
     [TestMethod]
@@ -282,7 +282,7 @@ public class SalaAppServiceTestes
 
         unitOfWorkMock
             .Setup(r => r.Commit())
-            .Throws(new Exception("Erro na exclus„o"));
+            .Throws(new Exception("Erro na exclus√£o"));
 
         // Act
         Result resultadoExclusao = salaAppService.Excluir(novaSala.Id);
@@ -298,7 +298,7 @@ public class SalaAppServiceTestes
     }
     #endregion
 
-    #region Testes SeleÁ„o por Id
+    #region Testes Sele√ß√£o por Id
     [TestMethod]
     public void Selecionar_Sala_Por_Id_Deve_Retornar_Sucesso()
     {
@@ -347,7 +347,7 @@ public class SalaAppServiceTestes
         Assert.IsTrue(resultadoSelecao.IsFailed);
         Assert.IsNull(salaSelecionada);
         Assert.AreNotEqual(novaSala, salaSelecionada);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
 
     [TestMethod]
@@ -378,7 +378,7 @@ public class SalaAppServiceTestes
     }
     #endregion
 
-    #region Testes SeleÁ„o de Todos
+    #region Testes Sele√ß√£o de Todos
     [TestMethod]
     public void Selecionar_Todas_Salas_Deve_Retornar_Sucesso()
     {

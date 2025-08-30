@@ -1,4 +1,4 @@
-using ControleDeCinema.Dominio.ModuloFilme;
+Ôªøusing ControleDeCinema.Dominio.ModuloFilme;
 using ControleDeCinema.Dominio.ModuloGeneroFilme;
 using ControleDeCinema.Dominio.ModuloSala;
 using ControleDeCinema.Dominio.ModuloSessao;
@@ -7,7 +7,7 @@ using FizzWare.NBuilder;
 namespace ControleDeCinema.Testes.Unidades.ModuloSessao;
 
 [TestClass]
-[TestCategory("Testes de Unidade de Sessao (DomÌnio)")]
+[TestCategory("Testes de Unidade de Sessao (Dom√≠nio)")]
 public class SessaoTestes
 {
     // SUT
@@ -15,7 +15,7 @@ public class SessaoTestes
 
     // TDB
     private static readonly GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
-        .WithFactory(() => new("ComÈdia") { Id = Guid.NewGuid() })
+        .WithFactory(() => new("Com√©dia") { Id = Guid.NewGuid() })
         .Build();
     private static readonly Filme filmePadrao = Builder<Filme>.CreateNew()
         .WithFactory(() => new Filme("Esposa de Mentirinha", 117, true, generoPadrao))
@@ -98,7 +98,7 @@ public class SessaoTestes
     }
     #endregion
 
-    #region ObterQuantidadeIngressosDisponÌveis
+    #region ObterQuantidadeIngressosDispon√≠veis
     [TestMethod]
     public void ObterQuantidadeIngressosDisponiveis_Deve_Retornar_Diferenca_Entre_Maximo_E_Vendidos()
     {

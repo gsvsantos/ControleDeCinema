@@ -1,4 +1,4 @@
-using ControledeCinema.Dominio.Compartilhado;
+Ôªøusing ControledeCinema.Dominio.Compartilhado;
 using ControleDeCinema.Aplicacao.ModuloSessao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloFilme;
@@ -21,7 +21,7 @@ public class SessaoAppServiceTestes
 
     // TDB
     private static readonly GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
-        .WithFactory(() => new("ComÈdia") { Id = Guid.NewGuid() })
+        .WithFactory(() => new("Com√©dia") { Id = Guid.NewGuid() })
         .Build();
     private static readonly Filme filmePadrao = Builder<Filme>.CreateNew()
         .WithFactory(() => new Filme("Esposa de Mentirinha", 117, true, generoPadrao))
@@ -30,7 +30,7 @@ public class SessaoAppServiceTestes
         .WithFactory(() => new Sala(1, 30) { Id = Guid.NewGuid() })
         .Build();
     private static readonly DateTime inicioPadrao = new(2025, 08, 09, 14, 30, 00);
-    // OBS: (filmePadrao tem 1h57 minutos, inicioPadrao È as 14:30 | 16:26 nega submits, 16:27 aceita submits)
+    // OBS: (filmePadrao tem 1h57 minutos, inicioPadrao √© as 14:30 | 16:26 nega submits, 16:27 aceita submits)
 
     // MOCK
     private Mock<ITenantProvider> tenantProviderMock;
@@ -157,7 +157,7 @@ public class SessaoAppServiceTestes
     }
     #endregion
 
-    #region Testes EdiÁ„o
+    #region Testes Edi√ß√£o
     [TestMethod]
     public void Editar_Sessao_Deve_Retornar_Sucesso()
     {
@@ -282,7 +282,7 @@ public class SessaoAppServiceTestes
 
         Assert.IsNotNull(resultadoEdicao);
         Assert.IsTrue(resultadoEdicao.IsFailed);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
 
     [TestMethod]
@@ -303,7 +303,7 @@ public class SessaoAppServiceTestes
 
         unitOfWorkMock
             .Setup(u => u.Commit())
-            .Throws(new Exception("Erro na ediÁ„o"));
+            .Throws(new Exception("Erro na edi√ß√£o"));
 
         // Act
         Result resultadoEdicao = sessaoAppService.Editar(novaSessao.Id, sessaoEditada);
@@ -319,7 +319,7 @@ public class SessaoAppServiceTestes
     }
     #endregion
 
-    #region Testes Exclus„o
+    #region Testes Exclus√£o
     [TestMethod]
     public void Excluir_Sessao_Deve_Retornar_Sucesso()
     {
@@ -373,7 +373,7 @@ public class SessaoAppServiceTestes
 
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsFailed);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
 
     [TestMethod]
@@ -392,7 +392,7 @@ public class SessaoAppServiceTestes
 
         unitOfWorkMock
             .Setup(u => u.Commit())
-            .Throws(new Exception("Erro na exclus„o"));
+            .Throws(new Exception("Erro na exclus√£o"));
 
         // Act
         Result resultadoExclusao = sessaoAppService.Excluir(Guid.NewGuid());
@@ -404,11 +404,11 @@ public class SessaoAppServiceTestes
 
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsFailed);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
     #endregion
 
-    #region Testes SeleÁ„o por Id
+    #region Testes Sele√ß√£o por Id
     [TestMethod]
     public void Selecionar_Sessao_Por_Id_Deve_Retornar_Sucesso()
     {
@@ -457,7 +457,7 @@ public class SessaoAppServiceTestes
         Assert.IsTrue(resultadoSelecao.IsFailed);
         Assert.IsNull(sessaoSelecionada);
         Assert.AreNotEqual(novaSessao, sessaoSelecionada);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
 
     [TestMethod]
@@ -488,7 +488,7 @@ public class SessaoAppServiceTestes
     }
     #endregion
 
-    #region Testes SeleÁ„o de Todos (Cargos)
+    #region Testes Sele√ß√£o de Todos (Cargos)
     [TestMethod]
     public void Selecionar_Todas_Sessoes_Para_Role_Empresa_Deve_Trazer_Apenas_Do_Usuario()
     {
@@ -671,7 +671,7 @@ public class SessaoAppServiceTestes
 
         Assert.IsNotNull(resultadoEncerramento);
         Assert.IsTrue(resultadoEncerramento.IsFailed);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
 
     [TestMethod]
@@ -752,7 +752,7 @@ public class SessaoAppServiceTestes
         Assert.IsNotNull(resultadoVenda);
         Assert.IsTrue(resultadoVenda.IsFailed);
         Assert.IsNull(ingressoVendido);
-        Assert.AreEqual("Registro n„o encontrado", mensagemErro);
+        Assert.AreEqual("Registro n√£o encontrado", mensagemErro);
     }
 
     [TestMethod]
@@ -780,7 +780,7 @@ public class SessaoAppServiceTestes
         Assert.IsNotNull(resultadoVenda);
         Assert.IsTrue(resultadoVenda.IsFailed);
         Assert.IsNull(ingressoVendido);
-        Assert.AreEqual("A sess„o j· foi encerrada.", mensagemErro);
+        Assert.AreEqual("A sess√£o j√° foi encerrada.", mensagemErro);
     }
 
     [TestMethod]
@@ -807,7 +807,7 @@ public class SessaoAppServiceTestes
         Assert.IsNotNull(resultadoVenda);
         Assert.IsTrue(resultadoVenda.IsFailed);
         Assert.IsNull(ingressoVendido);
-        Assert.AreEqual("Assento inv·lido para esta sess„o.", mensagemErro);
+        Assert.AreEqual("Assento inv√°lido para esta sess√£o.", mensagemErro);
     }
 
     [TestMethod]
@@ -836,7 +836,7 @@ public class SessaoAppServiceTestes
         Assert.IsNotNull(resultadoVenda);
         Assert.IsTrue(resultadoVenda.IsFailed);
         Assert.IsNull(ingressoVendido);
-        Assert.AreEqual("Este assento j· est· ocupado.", mensagemErro);
+        Assert.AreEqual("Este assento j√° est√° ocupado.", mensagemErro);
     }
 
     [TestMethod]
@@ -863,7 +863,7 @@ public class SessaoAppServiceTestes
         Assert.IsNotNull(resultadoVenda);
         Assert.IsTrue(resultadoVenda.IsFailed);
         Assert.IsNull(ingressoVendido);
-        Assert.AreEqual("Este assento j· est· ocupado.", mensagemErro);
+        Assert.AreEqual("Este assento j√° est√° ocupado.", mensagemErro);
         Assert.IsTrue(novaSessao.ObterQuantidadeIngressosDisponiveis() <= 0);
     }
 

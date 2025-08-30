@@ -1,4 +1,4 @@
-using ControleDeCinema.Aplicacao.ModuloSessao;
+Ôªøusing ControleDeCinema.Aplicacao.ModuloSessao;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloFilme;
 using ControleDeCinema.Dominio.ModuloGeneroFilme;
@@ -20,7 +20,7 @@ public class IngressoAppServiceTestes
 
     // TDB
     private static readonly GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
-        .WithFactory(() => new("ComÈdia") { Id = Guid.NewGuid() })
+        .WithFactory(() => new("Com√©dia") { Id = Guid.NewGuid() })
         .Build();
     private static readonly Filme filmePadrao = Builder<Filme>.CreateNew()
         .WithFactory(() => new Filme("Esposa de Mentirinha", 117, true, generoPadrao))
@@ -52,7 +52,7 @@ public class IngressoAppServiceTestes
         );
     }
 
-    #region Testes SeleÁ„o de Todos
+    #region Testes Sele√ß√£o de Todos
     [TestMethod]
     public void Selecionar_Todos_Ingressos_Deve_Retornar_Sucesso()
     {

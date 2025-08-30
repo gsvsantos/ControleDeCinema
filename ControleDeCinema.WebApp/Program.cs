@@ -1,4 +1,4 @@
-using ControleDeCinema.Aplicacao.ModuloAutenticacao;
+ï»¿using ControleDeCinema.Aplicacao.ModuloAutenticacao;
 using ControleDeCinema.Aplicacao.ModuloFilme;
 using ControleDeCinema.Aplicacao.ModuloGeneroFilme;
 using ControleDeCinema.Aplicacao.ModuloSala;
@@ -24,7 +24,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Configuração de serviços personalizados
+        // ConfiguraÃ§Ã£o de serviÃ§os personalizados
         builder.Services.AddScoped<AutenticacaoAppService>();
 
         builder.Services.AddScoped<SessaoAppService>();
@@ -43,7 +43,7 @@ public class Program
         builder.Services.AddCookieAuthenticationConfig();
         builder.Services.AddSerilogConfig(builder.Logging, builder.Configuration);
 
-        // Configuração de serviços da Microsoft
+        // ConfiguraÃ§Ã£o de serviÃ§os da Microsoft
         builder.Services.AddControllersWithViews(options =>
         {
             options.Filters.Add<ValidarModeloAttribute>();
@@ -52,7 +52,7 @@ public class Program
         builder.Services.AddHealthChecks()
             .AddDbContextCheck<ControleDeCinemaDbContext>();
 
-        // Build das dependências
+        // Build das dependÃªncias
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())

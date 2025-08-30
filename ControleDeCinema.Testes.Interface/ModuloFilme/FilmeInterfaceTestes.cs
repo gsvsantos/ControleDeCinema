@@ -1,4 +1,4 @@
-using ControleDeCinema.Testes.Interface.Compartilhado;
+ï»¿using ControleDeCinema.Testes.Interface.Compartilhado;
 using ControleDeCinema.Testes.Interface.ModuloGeneroFilme;
 
 namespace ControleDeCinema.Testes.Interface.ModuloFilme;
@@ -24,7 +24,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -38,7 +38,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         // Assert
@@ -54,7 +54,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -65,7 +65,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         // Act
@@ -77,7 +77,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha Editada")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         // Assert
@@ -93,7 +93,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -104,7 +104,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         // Act
@@ -128,7 +128,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -139,16 +139,16 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         filmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherTitulo("Cada Um Tem a Gêmea que Merece")
+            .PreencherTitulo("Cada Um Tem a GÃªmea que Merece")
             .PreencherDuracao(91)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         // Act
@@ -157,7 +157,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
 
         // Assert
         Assert.IsTrue(filmeIndex.ContemFilme("Esposa de Mentirinha"));
-        Assert.IsTrue(filmeIndex.ContemFilme("Cada Um Tem a Gêmea que Merece"));
+        Assert.IsTrue(filmeIndex.ContemFilme("Cada Um Tem a GÃªmea que Merece"));
     }
 
     [TestMethod]
@@ -169,7 +169,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -196,7 +196,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -210,7 +210,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(0)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmitEsperandoErros();
 
         // Assert
@@ -226,7 +226,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -237,7 +237,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         // Act
@@ -249,7 +249,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmitEsperandoErros();
 
         // Assert

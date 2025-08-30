@@ -1,4 +1,4 @@
-using ControledeCinema.Dominio.Compartilhado;
+ï»¿using ControledeCinema.Dominio.Compartilhado;
 using ControleDeCinema.Aplicacao.ModuloFilme;
 using ControleDeCinema.Dominio.ModuloAutenticacao;
 using ControleDeCinema.Dominio.ModuloFilme;
@@ -20,7 +20,7 @@ public class FilmeAppServiceTestes
     // TDB
     private static GeneroFilme generoPadrao = Builder<GeneroFilme>.CreateNew()
         .With(d => d.Id = Guid.NewGuid())
-        .With(d => d.Descricao = "Comédia")
+        .With(d => d.Descricao = "ComÃ©dia")
         .Build();
 
     // MOCK
@@ -123,14 +123,14 @@ public class FilmeAppServiceTestes
     }
     #endregion
 
-    #region Testes Edição
+    #region Testes EdiÃ§Ã£o
     [TestMethod]
     public void Editar_Filme_Deve_Retornar_Sucesso()
     {
         // Arrange
         GeneroFilme novoGenero = Builder<GeneroFilme>.CreateNew()
             .With(g => g.Id = Guid.NewGuid())
-            .With(g => g.Descricao = "Românce")
+            .With(g => g.Descricao = "RomÃ¢nce")
             .Build();
 
         Filme novoFilme = new("Esposa de Mentirinha", 117, true, novoGenero);
@@ -143,7 +143,7 @@ public class FilmeAppServiceTestes
             .Setup(r => r.SelecionarRegistroPorId(novoFilme.Id))
             .Returns(novoFilme);
 
-        Filme filmeEditado = new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao);
+        Filme filmeEditado = new("Todo Mundo Tem A IrmÃ£ GÃªmea Que Merece", 94, true, generoPadrao);
 
         // Act
         Result resultadoEdicao = filmeAppService.Editar(novoFilme.Id, filmeEditado);
@@ -165,14 +165,14 @@ public class FilmeAppServiceTestes
         List<Filme> filmesExistentes = new()
         {
             novoFilme,
-            new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao)
+            new("Todo Mundo Tem A IrmÃ£ GÃªmea Que Merece", 94, true, generoPadrao)
         };
 
         repositorioFilmeMock
             .Setup(r => r.SelecionarRegistros())
             .Returns(filmesExistentes);
 
-        Filme filmeEditado = new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao);
+        Filme filmeEditado = new("Todo Mundo Tem A IrmÃ£ GÃªmea Que Merece", 94, true, generoPadrao);
 
         // Act
         Result resultadoEdicao = filmeAppService.Editar(novoFilme.Id, filmeEditado);
@@ -198,7 +198,7 @@ public class FilmeAppServiceTestes
             .Setup(r => r.SelecionarRegistros())
             .Returns(new List<Filme>() { novoFilme });
 
-        Filme filmeEditado = new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao);
+        Filme filmeEditado = new("Todo Mundo Tem A IrmÃ£ GÃªmea Que Merece", 94, true, generoPadrao);
 
         repositorioFilmeMock
             .Setup(r => r.Editar(novoFilme.Id, filmeEditado))
@@ -206,7 +206,7 @@ public class FilmeAppServiceTestes
 
         unitOfWorkMock
             .Setup(u => u.Commit())
-            .Throws(new Exception("Erro na edição"));
+            .Throws(new Exception("Erro na ediÃ§Ã£o"));
 
         // Act
         Result resultadoEdicao = filmeAppService.Editar(novoFilme.Id, filmeEditado);
@@ -222,7 +222,7 @@ public class FilmeAppServiceTestes
     }
     #endregion
 
-    #region Testes Exclusão
+    #region Testes ExclusÃ£o
     [TestMethod]
     public void Excluir_Filme_Deve_Retornar_Sucesso()
     {
@@ -276,7 +276,7 @@ public class FilmeAppServiceTestes
 
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsFailed);
-        Assert.AreEqual("Registro não encontrado", mensagemErro);
+        Assert.AreEqual("Registro nÃ£o encontrado", mensagemErro);
     }
 
     [TestMethod]
@@ -295,7 +295,7 @@ public class FilmeAppServiceTestes
 
         unitOfWorkMock
             .Setup(u => u.Commit())
-            .Throws(new Exception("Erro na exclusão"));
+            .Throws(new Exception("Erro na exclusÃ£o"));
 
         // Act
         Result resultadoExclusao = filmeAppService.Excluir(novoFilme.Id);
@@ -311,7 +311,7 @@ public class FilmeAppServiceTestes
     }
     #endregion
 
-    #region Testes Seleção por Id
+    #region Testes SeleÃ§Ã£o por Id
     [TestMethod]
     public void Selecionar_Filme_Por_Id_Deve_Retornar_Sucesso()
     {
@@ -360,7 +360,7 @@ public class FilmeAppServiceTestes
         Assert.IsTrue(resultadoSelecao.IsFailed);
         Assert.IsNull(filmeSelecionado);
         Assert.AreNotEqual(novoFilme, filmeSelecionado);
-        Assert.AreEqual("Registro não encontrado", mensagemErro);
+        Assert.AreEqual("Registro nÃ£o encontrado", mensagemErro);
     }
 
     [TestMethod]
@@ -392,7 +392,7 @@ public class FilmeAppServiceTestes
     }
     #endregion
 
-    #region Testes Seleção de Todos
+    #region Testes SeleÃ§Ã£o de Todos
     [TestMethod]
     public void Selecionar_Todos_Filmes_Deve_Retornar_Sucesso()
     {
@@ -402,7 +402,7 @@ public class FilmeAppServiceTestes
         List<Filme> filmesExistentes = new()
         {
             novoFilme,
-            new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao)
+            new("Todo Mundo Tem A IrmÃ£ GÃªmea Que Merece", 94, true, generoPadrao)
         };
 
         repositorioFilmeMock
@@ -432,7 +432,7 @@ public class FilmeAppServiceTestes
         List<Filme> filmesExistentes = new()
         {
             novoFilme,
-            new("Todo Mundo Tem A Irmã Gêmea Que Merece", 94, true, generoPadrao)
+            new("Todo Mundo Tem A IrmÃ£ GÃªmea Que Merece", 94, true, generoPadrao)
         };
 
         repositorioFilmeMock

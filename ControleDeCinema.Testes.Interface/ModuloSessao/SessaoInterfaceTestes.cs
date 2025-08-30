@@ -1,4 +1,4 @@
-using ControleDeCinema.Testes.Interface.Compartilhado;
+ï»¿using ControleDeCinema.Testes.Interface.Compartilhado;
 using ControleDeCinema.Testes.Interface.ModuloFilme;
 using ControleDeCinema.Testes.Interface.ModuloGeneroFilme;
 using ControleDeCinema.Testes.Interface.ModuloIngresso;
@@ -7,7 +7,7 @@ using ControleDeCinema.Testes.Interface.ModuloSala;
 namespace ControleDeCinema.Testes.Interface.ModuloSessao;
 
 [TestClass]
-[TestCategory("Testes de Interface de Sessão")]
+[TestCategory("Testes de Interface de SessÃ£o")]
 public sealed class SessaoInterfaceTestes : TestFixture
 {
     [TestInitialize]
@@ -26,7 +26,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -36,7 +36,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         SalaIndexPageObject salaIndex = new(driver);
@@ -73,7 +73,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -83,15 +83,15 @@ public sealed class SessaoInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
         filmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherTitulo("Todo Mundo Tem a Irmã Gêmea Que Merece")
+            .PreencherTitulo("Todo Mundo Tem a IrmÃ£ GÃªmea Que Merece")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         SalaIndexPageObject salaIndex = new(driver);
@@ -120,12 +120,12 @@ public sealed class SessaoInterfaceTestes : TestFixture
         sessaoForm
             .PreencherInicio("2025-08-24T14:30")
             .PreencherNumeroMaximoIngressos(12)
-            .SelecionarFilme("Todo Mundo Tem a Irmã Gêmea Que Merece")
+            .SelecionarFilme("Todo Mundo Tem a IrmÃ£ GÃªmea Que Merece")
             .SelecionarSala(5)
             .ClickSubmit();
 
         // Assert
-        Assert.IsTrue(sessaoIndex.ContemSessao("Todo Mundo Tem a Irmã Gêmea Que Merece"));
+        Assert.IsTrue(sessaoIndex.ContemSessao("Todo Mundo Tem a IrmÃ£ GÃªmea Que Merece"));
     }
 
     [TestMethod]
@@ -136,7 +136,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -146,7 +146,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         SalaIndexPageObject salaIndex = new(driver);
@@ -189,7 +189,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -199,7 +199,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         SalaIndexPageObject salaIndex = new(driver);
@@ -241,7 +241,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -251,7 +251,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         SalaIndexPageObject salaIndex = new(driver);
@@ -331,7 +331,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("Comédia")
+            .PreencherDescricao("ComÃ©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -341,15 +341,15 @@ public sealed class SessaoInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
         filmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherTitulo("Todo Mundo Tem a Irmã Gêmea Que Merece")
+            .PreencherTitulo("Todo Mundo Tem a IrmÃ£ GÃªmea Que Merece")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("Comédia")
+            .SelecionarGenero("ComÃ©dia")
             .ClickSubmit();
 
         SalaIndexPageObject salaIndex = new(driver);

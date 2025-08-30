@@ -1,4 +1,4 @@
-using ControleDeCinema.WebApp.Models;
+﻿using ControleDeCinema.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;

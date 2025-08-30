@@ -1,4 +1,4 @@
-using ControleDeCinema.Testes.Interface.Compartilhado;
+Ôªøusing ControleDeCinema.Testes.Interface.Compartilhado;
 using ControleDeCinema.Testes.Interface.ModuloFilme;
 using ControleDeCinema.Testes.Interface.ModuloGeneroFilme;
 using ControleDeCinema.Testes.Interface.ModuloSala;
@@ -26,7 +26,7 @@ public sealed class IngressoInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("ComÈdia")
+            .PreencherDescricao("Com√©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -36,15 +36,15 @@ public sealed class IngressoInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("ComÈdia")
+            .SelecionarGenero("Com√©dia")
             .ClickSubmit();
         filmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherTitulo("Todo Mundo Tem a Irm„ GÍmea Que Merece")
+            .PreencherTitulo("Todo Mundo Tem a Irm√£ G√™mea Que Merece")
             .PreencherDuracao(94)
             .MarcarLancamento()
-            .SelecionarGenero("ComÈdia")
+            .SelecionarGenero("Com√©dia")
             .ClickSubmit();
 
         SalaIndexPageObject salaIndex = new(driver);
@@ -76,7 +76,7 @@ public sealed class IngressoInterfaceTestes : TestFixture
             .ClickCadastrar()
             .PreencherInicio("2025-08-12T20:00")
             .PreencherNumeroMaximoIngressos(10)
-            .SelecionarFilme("Todo Mundo Tem a Irm„ GÍmea Que Merece")
+            .SelecionarFilme("Todo Mundo Tem a Irm√£ G√™mea Que Merece")
             .SelecionarSala(1)
             .ClickSubmit();
 
@@ -89,7 +89,7 @@ public sealed class IngressoInterfaceTestes : TestFixture
 
         // Assert
         Assert.IsTrue(ingressoIndex.ContemFilme("Esposa de Mentirinha"));
-        Assert.IsTrue(ingressoIndex.ContemFilme("Todo Mundo Tem a Irm„ GÍmea Que Merece"));
+        Assert.IsTrue(ingressoIndex.ContemFilme("Todo Mundo Tem a Irm√£ G√™mea Que Merece"));
     }
 
     [TestMethod]
@@ -100,7 +100,7 @@ public sealed class IngressoInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("ComÈdia")
+            .PreencherDescricao("Com√©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -110,7 +110,7 @@ public sealed class IngressoInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("ComÈdia")
+            .SelecionarGenero("Com√©dia")
             .ClickSubmit();
 
         SalaIndexPageObject salaIndex = new(driver);
@@ -165,7 +165,7 @@ public sealed class IngressoInterfaceTestes : TestFixture
         generoFilmeIndex
             .IrPara(enderecoBase)
             .ClickCadastrar()
-            .PreencherDescricao("ComÈdia")
+            .PreencherDescricao("Com√©dia")
             .ClickSubmit();
 
         FilmeIndexPageObject filmeIndex = new(driver);
@@ -175,7 +175,7 @@ public sealed class IngressoInterfaceTestes : TestFixture
             .PreencherTitulo("Esposa de Mentirinha")
             .PreencherDuracao(117)
             .MarcarLancamento()
-            .SelecionarGenero("ComÈdia")
+            .SelecionarGenero("Com√©dia")
             .ClickSubmit();
 
         SalaIndexPageObject salaIndex = new(driver);
@@ -212,13 +212,13 @@ public sealed class IngressoInterfaceTestes : TestFixture
             .IrPara(enderecoBase)
             .ClickDetalhes();
 
-        // Assert (a View n„o libera o bot„o de comprar ingresso caso esgote - validaÁ„o feita nos testes de unidades) 
+        // Assert (a View n√£o libera o bot√£o de comprar ingresso caso esgote - valida√ß√£o feita nos testes de unidades) 
         Assert.IsFalse(sessaoIndex.ContemIngressosDisponiveis(1));
     }
 
     [TestMethod]
     public void Nao_Deve_Comprar_Quantidade_Indisponivel_De_Ingresso()
     {
-        // (a View n„o libera o bot„o de comprar ingresso caso esgote e compra È feita de um em um - validaÁ„o feita nos testes de unidades)
+        // (a View n√£o libera o bot√£o de comprar ingresso caso esgote e compra √© feita de um em um - valida√ß√£o feita nos testes de unidades)
     }
 }
