@@ -90,8 +90,19 @@
                         <span class="fw-semibold">Início:</span> @registro.Inicio.ToString()
                     </p>
 
+                    @if (User.IsInRole("Empresa"))
+                    {
+                        <p class="card-text mb-0">
+                            <span class="fw-semibold">Número de Ingressos:</span> @registro.MaxIngressos
+                        </p>
+
+                        <p class="card-text mb-0">
+                            <span class="fw-semibold">Ingressos:</span> @registro.IngressosVendidos / @registro.MaxIngressos
+                        </p>
+                    }
+
                     <p class="card-text mb-0">
-                        <span class="fw-semibold">Número de Ingressos:</span> @registro.MaxIngressos
+                        <span class="fw-semibold">Disponíveis:</span> @registro.IngressosDisponiveis
                     </p>
 
                     <p class="card-text">
@@ -100,32 +111,32 @@
 
                     <div class="mt-auto d-flex gap-1 justify-content-end">
 
-                        <a asp-action="Detalhes" asp-route-id="@registro.Id" class="btn btn-secondary rounded-circle card-option" title="Detalhes">
+                        <a asp-action="Detalhes" asp-route-id="@registro.Id" class="btn btn-secondary rounded-circle card-option" title="Detalhes" data-se="btnDetalhes">
                             <i class="bi bi-search"></i>
                         </a>
                         
                         @if (User.IsInRole("Empresa"))
                         {
-                            <a asp-action="Editar" asp-route-id="@registro.Id" class="btn btn-primary rounded-circle card-option" title="Edição">
+                            <a asp-action="Editar" asp-route-id="@registro.Id" class="btn btn-primary rounded-circle card-option" title="Edição" data-se="btnEditar">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
 
                             @if (registro.Encerrada)
                             {
-                                <a asp-action="Excluir" asp-route-id="@registro.Id" class="btn btn-danger rounded-circle card-option" title="Exclusão">
+                                <a asp-action="Excluir" asp-route-id="@registro.Id" class="btn btn-danger rounded-circle card-option" title="Exclusão" data-se="btnExcluir">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             }
                             else
                             {
-                                <a asp-action="Encerrar" asp-route-id="@registro.Id" class="btn btn-danger rounded-circle card-option" title="Encerrar">
+                                <a asp-action="Encerrar" asp-route-id="@registro.Id" class="btn btn-danger rounded-circle card-option" title="Encerrar" data-se="btnEncerrar">
                                     <i class="bi bi-calendar-x"></i>
                                 </a>
                             }
                         }
-                        else if (User.IsInRole("Cliente"))
+                        else if (User.IsInRole("Cliente") && @registro.IngressosDisponiveis >= 1)
                         {
-                            <a asp-controller="Ingresso" asp-action="ComprarIngresso" asp-route-sessaoId="@registro.Id" class="btn btn-success rounded-circle card-option" title="Comprar Ingresso">
+                            <a asp-controller="Ingresso" asp-action="ComprarIngresso" asp-route-sessaoId="@registro.Id" class="btn btn-success rounded-circle card-option" title="Comprar Ingresso" data-se="btnComprarIngresso">
                                 <i class="bi bi-ticket-perforated"></i>
                             </a>
                         }

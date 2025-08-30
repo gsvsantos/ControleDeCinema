@@ -92,7 +92,10 @@ public class SalaAppService
     {
         try
         {
-            repositorioSala.Excluir(id);
+            var exclusaoConcluida = repositorioSala.Excluir(id);
+
+            if (!exclusaoConcluida)
+                return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(id));
 
             unitOfWork.Commit();
 

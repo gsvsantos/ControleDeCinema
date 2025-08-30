@@ -16,10 +16,23 @@
                     <label for="Inicio" class="control-label fs-5">Início:</label>
                     <input name="Inicio" class="form-control" value="@Model.Inicio" readonly disabled />
                 </div>
+                
+                @if (User.IsInRole("Empresa"))
+                {
+                    <div class="form-group d-grid gap-2 mt-3">
+                        <label for="MaxIngressos" class="control-label fs-5">Número máximo de ingressos:</label>
+                        <input name="MaxIngressos" class="form-control" value="@Model.MaxIngressos" readonly disabled />
+                    </div>
+
+                    <div class="form-group d-grid gap-2 mt-3">
+                        <label class="control-label fs-5">Ingressos vendidos:</label>
+                        <input class="form-control" value="@Model.IngressosVendidos" readonly disabled data-se="ingressosVendidos" />
+                    </div>
+                }
 
                 <div class="form-group d-grid gap-2 mt-3">
-                    <label for="MaxIngressos" class="control-label fs-5">Número máximo de ingressos:</label>
-                    <input name="MaxIngressos" class="form-control" value="@Model.MaxIngressos" readonly disabled />
+                    <label class="control-label fs-5">Ingressos disponíveis:</label>
+                    <input class="form-control" value="@Model.IngressosDisponiveis" readonly disabled data-se="ingressosDisponiveis" />
                 </div>
 
                 <div class="form-group d-grid gap-2 mt-3">
@@ -38,7 +51,7 @@
                 </div>
 
                 <div class="form-group d-flex align-items-center justify-content-end gap-3 mt-5">
-                    <a asp-action="Index">Voltar para a listagem</a>
+                    <a asp-action="Index" data-se="btnVoltar">Voltar para a listagem</a>
                 </div>
             </div>
         </div>

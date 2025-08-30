@@ -62,7 +62,9 @@ public class Sessao : EntidadeBase<Sessao>
 
     public override void AtualizarRegistro(Sessao registroEditado)
     {
-        NumeroMaximoIngressos = registroEditado.NumeroMaximoIngressos;
         Inicio = registroEditado.Inicio;
+        NumeroMaximoIngressos = registroEditado.NumeroMaximoIngressos;
+        Filme = registroEditado.Filme;
+        Sala = registroEditado.Sala;
     }
 }
