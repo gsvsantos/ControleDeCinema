@@ -75,7 +75,7 @@ jobs:
         run: dotnet tool install --global dotnet-ef
     
       - name: Apply EF Core migrations
-        run: dotnet ef database update --project ./ControleDeCinema.Infraestrutura.Orm --startup-project ./GeradorDeTestes.WebApp
+        run: dotnet ef database update --project ./ControleDeCinema.Infraestrutura.Orm --startup-project ./ControleDeCinema.WebApp
         env: 
           ASPNET_ENVIRONMENT: "GITHUB_ACTIONS"
           SQL_CONNECTION_STRING: ${{ secrets.SQL_CONNECTION_STRING }}
@@ -111,4 +111,5 @@ jobs:
           package: .
 
           
+
 
