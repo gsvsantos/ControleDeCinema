@@ -229,6 +229,46 @@ public class AutenticacaoAppServiceTestes
     }
 
     [TestMethod]
+    public async Task Registrar_Com_Erro_Desconhecido_Deve_Usar_Descricao_Padrao()
+    {
+        // Arrange
+        Usuario novoUsuario = new()
+        {
+            UserName = "outroUserName",
+            Email = emailPadrao
+        };
+
+        IdentityError[] errosDesconhecidos =
+        {
+        new() { Code = "ErroInesperado", Description = "Erro inesperado no cadastro." }
+    };
+
+        userManagerMock
+            .Setup(u => u.CreateAsync(novoUsuario, senhaPadrao))
+            .ReturnsAsync(IdentityResult.Failed(errosDesconhecidos));
+
+        // Act
+        Result? resultadoRegistro = await autenticacaoAppService.RegistrarAsync(novoUsuario, senhaPadrao, tipoUsuarioPadrao);
+
+        // Assert
+        userManagerMock.Verify(u => u.CreateAsync(novoUsuario, senhaPadrao), Times.Once);
+        roleManagerMock.Verify(r => r.FindByNameAsync(tipoUsuarioPadraoString), Times.Never);
+        userManagerMock.Verify(u => u.AddToRoleAsync(novoUsuario, tipoUsuarioPadraoString), Times.Never);
+        signInManagerMock.Verify(s => s.PasswordSignInAsync(novoUsuario.Email, senhaPadrao, true, false), Times.Never);
+
+        string mensagemEsperada = "Erro inesperado no cadastro.";
+        List<string> mensagensDoResult = resultadoRegistro.Errors
+            .SelectMany(e => e.Reasons.OfType<Error>())
+            .Select(r => r.Message)
+            .ToList();
+
+        Assert.IsNotNull(resultadoRegistro);
+        Assert.IsTrue(resultadoRegistro.IsFailed);
+        Assert.AreEqual(1, mensagensDoResult.Count);
+        Assert.AreEqual(mensagemEsperada, mensagensDoResult[0]);
+    }
+
+    [TestMethod]
     public async Task Registrar_Cria_Cargo_Quando_Inexistente_E_Atribui_Ao_Usuario()
     {
         // Arrange

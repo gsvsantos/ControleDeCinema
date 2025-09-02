@@ -1,4 +1,5 @@
 using ControledeCinema.Dominio.Compartilhado;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ControleDeCinema.Dominio.ModuloSala;
 
@@ -7,7 +8,8 @@ public class Sala : EntidadeBase<Sala>
     public int Numero { get; set; }
     public int Capacidade { get; set; }
 
-    public Sala() { }
+    [ExcludeFromCodeCoverage]
+    protected Sala() { }
 
     public Sala(int numero, int capacidade)
     {

@@ -28,16 +28,16 @@ public class SessaoAppService
 
     public Result Cadastrar(Sessao sessao)
     {
-        List<string> erros = new List<string>();
+        List<string> erros = new();
 
         if (sessao.NumeroMaximoIngressos > sessao.Sala.Capacidade)
             erros.Add("O número máximo de ingressos não pode exceder a capacidade da sala.");
 
-        var novaSessaoInicio = sessao.Inicio;
-        var novoSessaoFim = sessao.Inicio.AddMinutes(Convert.ToDouble(sessao.Filme.Duracao));
+        DateTime novaSessaoInicio = sessao.Inicio;
+        DateTime novoSessaoFim = sessao.Inicio.AddMinutes(Convert.ToDouble(sessao.Filme.Duracao));
 
         // evitar duplicidade de sessão por sala/horário
-        var duplicada = repositorioSessao.SelecionarRegistros()
+        bool duplicada = repositorioSessao.SelecionarRegistros()
             .Any(s => s.Sala.Id.Equals(sessao.Sala.Id) && s.Inicio.Date.Equals(sessao.Inicio.Date) &&
                 novaSessaoInicio < s.Inicio.AddMinutes(Convert.ToDouble(s.Filme.Duracao)) &&
                 s.Inicio < novoSessaoFim
@@ -71,16 +71,16 @@ public class SessaoAppService
 
     public Result Editar(Guid id, Sessao sessaoEditada)
     {
-        List<string> erros = new List<string>();
+        List<string> erros = new();
 
         if (sessaoEditada.NumeroMaximoIngressos > sessaoEditada.Sala.Capacidade)
             erros.Add("O número máximo de ingressos não pode exceder a capacidade da sala.");
 
-        var novaSessaoInicio = sessaoEditada.Inicio;
-        var novoSessaoFim = sessaoEditada.Inicio.AddMinutes(Convert.ToDouble(sessaoEditada.Filme.Duracao));
+        DateTime novaSessaoInicio = sessaoEditada.Inicio;
+        DateTime novoSessaoFim = sessaoEditada.Inicio.AddMinutes(Convert.ToDouble(sessaoEditada.Filme.Duracao));
 
         // evitar duplicidade de sessão por sala/horário
-        var duplicada = repositorioSessao.SelecionarRegistros()
+        bool duplicada = repositorioSessao.SelecionarRegistros()
             .Any(s => !s.Id.Equals(id) &&
                 s.Sala.Id.Equals(sessaoEditada.Sala.Id) && s.Inicio.Date.Equals(sessaoEditada.Inicio.Date) &&
                 novaSessaoInicio < s.Inicio.AddMinutes(Convert.ToDouble(s.Filme.Duracao)) &&
@@ -95,7 +95,7 @@ public class SessaoAppService
 
         try
         {
-            var ok = repositorioSessao.Editar(id, sessaoEditada);
+            bool ok = repositorioSessao.Editar(id, sessaoEditada);
 
             if (!ok)
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(id));
@@ -116,12 +116,18 @@ public class SessaoAppService
 
     public Result Excluir(Guid id)
     {
+        Sessao sessaoSelecionada = repositorioSessao.SelecionarRegistroPorId(id)!;
+
+        if (sessaoSelecionada is null)
+            return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(id));
+
+        if (!sessaoSelecionada.Encerrada)
+            return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro("Esta sessão não pode ser excluída, pois ainda não foi encerrada."));
+
         try
         {
-            var exclusaoConcluida = repositorioSessao.Excluir(id);
 
-            if (!exclusaoConcluida)
-                return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(id));
+            bool exclusaoConcluida = repositorioSessao.Excluir(id);
 
             unitOfWork.Commit();
 
@@ -141,7 +147,7 @@ public class SessaoAppService
     {
         try
         {
-            var sessao = repositorioSessao.SelecionarRegistroPorId(id);
+            Sessao? sessao = repositorioSessao.SelecionarRegistroPorId(id);
 
             if (sessao is null)
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(id));
@@ -160,7 +166,7 @@ public class SessaoAppService
     {
         try
         {
-            List<Sessao> registros = new List<Sessao>();
+            List<Sessao> registros = new();
 
             if (tenantProvider.IsInRole("Empresa"))
                 registros = repositorioSessao.SelecionarRegistrosDoUsuario(tenantProvider.UsuarioId.GetValueOrDefault());
@@ -182,7 +188,7 @@ public class SessaoAppService
     {
         try
         {
-            var sessao = repositorioSessao.SelecionarRegistroPorId(id);
+            Sessao? sessao = repositorioSessao.SelecionarRegistroPorId(id);
 
             if (sessao is null)
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(id));
@@ -207,10 +213,13 @@ public class SessaoAppService
     {
         try
         {
-            var sessao = repositorioSessao.SelecionarRegistroPorId(sessaoId);
+            Sessao? sessao = repositorioSessao.SelecionarRegistroPorId(sessaoId);
 
             if (sessao is null)
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(sessaoId));
+
+            if (sessao.ObterQuantidadeIngressosDisponiveis() <= 0)
+                return Result.Fail(new Error("Sessão lotada."));
 
             if (sessao.Encerrada)
                 return Result.Fail(new Error("A sessão já foi encerrada."));
@@ -221,10 +230,7 @@ public class SessaoAppService
             if (sessao.Ingressos.Any(i => i.NumeroAssento == assento))
                 return Result.Fail(new Error("Este assento já está ocupado."));
 
-            if (sessao.ObterQuantidadeIngressosDisponiveis() <= 0)
-                return Result.Fail(new Error("Sessão lotada."));
-
-            var ingresso = sessao.GerarIngresso(assento, meiaEntrada);
+            Ingresso ingresso = sessao.GerarIngresso(assento, meiaEntrada);
 
             ingresso.UsuarioId = tenantProvider.UsuarioId.GetValueOrDefault();
 

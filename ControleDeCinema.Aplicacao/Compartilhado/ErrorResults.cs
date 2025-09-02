@@ -39,7 +39,6 @@ public abstract class ResultadosErro
             .WithMetadata("TipoErro", "ExclusaoBloqueada");
     }
 
-
     public static Error ExcecaoInternaErro(Exception ex)
     {
         return new Error("Ocorreu um erro interno do servidor")

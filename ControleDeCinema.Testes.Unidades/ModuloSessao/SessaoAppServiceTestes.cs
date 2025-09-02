@@ -325,6 +325,7 @@ public class SessaoAppServiceTestes
     {
         // Arrange
         Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+        novaSessao.Encerrar();
 
         repositorioSessaoMock
             .Setup(r => r.SelecionarRegistros())
@@ -354,17 +355,22 @@ public class SessaoAppServiceTestes
     {
         // Arrange
         Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+        Guid idAleatorio = Guid.NewGuid();
+        novaSessao.Encerrar();
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(idAleatorio));
 
         repositorioSessaoMock
             .Setup(r => r.SelecionarRegistros())
             .Returns(new List<Sessao>() { novaSessao });
 
         repositorioSessaoMock
-            .Setup(r => r.Excluir(Guid.NewGuid()))
+            .Setup(r => r.Excluir(idAleatorio))
             .Returns(false);
 
         // Act
-        Result resultadoExclusao = sessaoAppService.Excluir(Guid.NewGuid());
+        Result resultadoExclusao = sessaoAppService.Excluir(idAleatorio);
 
         // Assert
         unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
@@ -377,10 +383,42 @@ public class SessaoAppServiceTestes
     }
 
     [TestMethod]
+    public void Excluir_Sessao_Com_Relacoes_Deve_Retornar_Falha()
+    {
+        // Arrange
+        Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
+
+        novaSessao.GerarIngresso(1, false);
+        novaSessao.GerarIngresso(2, true);
+
+        // Act
+        Result resultadoExclusao = sessaoAppService.Excluir(novaSessao.Id);
+
+        // Assert
+        repositorioSessaoMock.Verify(r => r.Excluir(novaSessao.Id), Times.Never);
+        unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
+
+        string mensagemErro = resultadoExclusao.Errors[0].Message;
+
+        Assert.IsNotNull(resultadoExclusao);
+        Assert.IsTrue(resultadoExclusao.IsFailed);
+        Assert.AreEqual("Exclusão bloqueada", mensagemErro);
+    }
+
+    [TestMethod]
     public void Excluir_Sessao_Com_Excecao_Lancada_Deve_Retornar_Falha()
     {
         // Arrange
         Sessao novaSessao = new(inicioPadrao, 30, filmePadrao, salaPadrao);
+        novaSessao.Encerrar();
+
+        repositorioSessaoMock
+            .Setup(r => r.SelecionarRegistroPorId(novaSessao.Id))
+            .Returns(novaSessao);
 
         repositorioSessaoMock
             .Setup(r => r.SelecionarRegistros())
@@ -395,7 +433,7 @@ public class SessaoAppServiceTestes
             .Throws(new Exception("Erro na exclusão"));
 
         // Act
-        Result resultadoExclusao = sessaoAppService.Excluir(Guid.NewGuid());
+        Result resultadoExclusao = sessaoAppService.Excluir(novaSessao.Id);
 
         // Assert
         unitOfWorkMock.Verify(u => u.Commit(), Times.Never);
@@ -404,7 +442,7 @@ public class SessaoAppServiceTestes
 
         Assert.IsNotNull(resultadoExclusao);
         Assert.IsTrue(resultadoExclusao.IsFailed);
-        Assert.AreEqual("Registro não encontrado", mensagemErro);
+        Assert.AreEqual("Ocorreu um erro interno do servidor", mensagemErro);
     }
     #endregion
 
@@ -851,7 +889,7 @@ public class SessaoAppServiceTestes
             .Returns(novaSessao);
 
         // Act
-        Result<Ingresso> resultadoVenda = sessaoAppService.VenderIngresso(novaSessao.Id, 1, false);
+        Result<Ingresso> resultadoVenda = sessaoAppService.VenderIngresso(novaSessao.Id, 2, false);
 
         Ingresso ingressoVendido = resultadoVenda.ValueOrDefault;
 
@@ -863,8 +901,8 @@ public class SessaoAppServiceTestes
         Assert.IsNotNull(resultadoVenda);
         Assert.IsTrue(resultadoVenda.IsFailed);
         Assert.IsNull(ingressoVendido);
-        Assert.AreEqual("Este assento já está ocupado.", mensagemErro);
         Assert.IsTrue(novaSessao.ObterQuantidadeIngressosDisponiveis() <= 0);
+        Assert.AreEqual("Sessão lotada.", mensagemErro);
     }
 
     [TestMethod]

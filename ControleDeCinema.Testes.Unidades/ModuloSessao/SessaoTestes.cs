@@ -25,6 +25,30 @@ public class SessaoTestes
         .Build();
     private static readonly DateTime inicioPadrao = new(2025, 08, 09, 14, 30, 00);
 
+    [TestMethod]
+    public void Deve_Atualizar_Registros_Sessao_Corretamemnte()
+    {
+        // Arrange
+        sessao = new(inicioPadrao, 10, filmePadrao, salaPadrao);
+
+        Sala novaSala = Builder<Sala>.CreateNew()
+        .WithFactory(() => new Sala(2, 15) { Id = Guid.NewGuid() })
+        .Build();
+
+        DateTime novoInicio = new(2025, 08, 09, 16, 26, 00);
+
+        Sessao sessaoEditada = new(novoInicio, 15, filmePadrao, novaSala);
+
+        // Act
+        sessao.AtualizarRegistro(sessaoEditada);
+
+        // Assert
+        Assert.AreEqual(sessaoEditada.Inicio, sessao.Inicio);
+        Assert.AreEqual(sessaoEditada.NumeroMaximoIngressos, sessao.NumeroMaximoIngressos);
+        Assert.AreEqual(sessaoEditada.Filme, sessao.Filme);
+        Assert.AreEqual(sessaoEditada.Sala, sessao.Sala);
+    }
+
     #region GerarIngresso
     [TestMethod]
     public void GerarIngresso_Deve_Adicionar_Ingresso_A_Lista()
