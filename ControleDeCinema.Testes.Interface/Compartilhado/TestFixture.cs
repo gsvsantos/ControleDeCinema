@@ -67,9 +67,6 @@ public abstract class TestFixture
     [TestInitialize]
     public virtual void InicializarTeste()
     {
-        if (dbContainer is null)
-            throw new ArgumentNullException("O banco de dados não foi inicializado corretamente.");
-
         dbContext = ControleDeCinemaDbContextFactory.CriarDbContext(dbContainer.GetConnectionString());
 
         ConfigurarTabelas(dbContext);
@@ -116,21 +113,21 @@ public abstract class TestFixture
 
     private static async Task InicializarAplicacaoAsync()
     {
-        IFutureDockerImage image = new ImageFromDockerfileBuilder()
-            .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
-            .WithDockerfile("Dockerfile")
-            .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
-            .WithName("controle-de-cinema-db-e2e:latest")
-            .Build();
+        //IFutureDockerImage image = new ImageFromDockerfileBuilder()
+        //    .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
+        //    .WithDockerfile("Dockerfile")
+        //    .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"))
+        //    .WithName("controle-de-cinema-db-e2e:latest")
+        //    .Build();
 
-        await image.CreateAsync().ConfigureAwait(false);
+        //await image.CreateAsync().ConfigureAwait(false);
 
         string? connectionStringRede = dbContainer.GetConnectionString()
             .Replace(dbContainer.Hostname, "controle-de-cinema-db-e2e")
             .Replace(dbContainer.GetMappedPublicPort(dbPort).ToString(), "5432");
 
         appContainer = new ContainerBuilder()
-            .WithImage(image)
+            .WithImage("controledecinemawebapp:latest")
             .WithImagePullPolicy(PullPolicy.Never)
             .WithPortBinding(appPort, true)
             .WithNetwork(rede)
@@ -277,7 +274,7 @@ public abstract class TestFixture
         wait.Until(d => d.FindElements(By.CssSelector("form[action='/autenticacao/logout']")).Count > 0);
     }
 
-    protected static void FazerLogin(string tipoConta)
+    protected static void FazerLoginEmpresa()
     {
         driver.Navigate().GoToUrl($"{enderecoBase}/autenticacao/login");
 
@@ -285,11 +282,7 @@ public abstract class TestFixture
         IWebElement inputSenha = driver.FindElement(By.CssSelector("input[data-se='inputSenha']"));
 
         inputEmail.Clear();
-        if (tipoConta == "Cliente")
-            inputEmail.SendKeys(emailCliente);
-        else if (tipoConta == "Empresa")
-            inputEmail.SendKeys(emailEmpresa);
-
+        inputEmail.SendKeys(emailEmpresa);
 
         inputSenha.Clear();
         inputSenha.SendKeys(senhaPadrao);

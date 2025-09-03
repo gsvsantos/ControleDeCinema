@@ -296,7 +296,7 @@ public sealed class SessaoInterfaceTestes : TestFixture
 
         // Assert 
         FazerLogout();
-        FazerLogin("Empresa");
+        FazerLoginEmpresa();
 
         sessaoIndex
             .IrPara(enderecoBase)
@@ -318,9 +318,9 @@ public sealed class SessaoInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(sessaoForm.EstourouValidacao("NumeroMaximoIngressos"));
-        Assert.IsTrue(sessaoForm.EstourouValidacao("FilmeId"));
-        Assert.IsTrue(sessaoForm.EstourouValidacao("SalaId"));
+        Assert.IsTrue(sessaoForm.EstourouValidacaoSpan("NumeroMaximoIngressos"));
+        Assert.IsTrue(sessaoForm.EstourouValidacaoSpan("FilmeId"));
+        Assert.IsTrue(sessaoForm.EstourouValidacaoSpan("SalaId"));
     }
 
     [TestMethod]
@@ -383,6 +383,6 @@ public sealed class SessaoInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert (
-        Assert.IsTrue(sessaoForm.EstourouValidacao());
+        Assert.IsTrue(sessaoForm.EstourouValidacaoAlert());
     }
 }

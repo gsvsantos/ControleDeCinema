@@ -129,8 +129,8 @@ public sealed class SalaInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(salaForm.EstourouValidacao("Numero"));
-        Assert.IsTrue(salaForm.EstourouValidacao("Capacidade"));
+        Assert.IsTrue(salaForm.EstourouValidacaoSpan("Numero"));
+        Assert.IsTrue(salaForm.EstourouValidacaoSpan("Capacidade"));
     }
 
     [TestMethod]
@@ -150,7 +150,7 @@ public sealed class SalaInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(salaForm.EstourouValidacao("Capacidade"));
+        Assert.IsTrue(salaForm.EstourouValidacaoSpan("Capacidade"));
     }
 
     [TestMethod]
@@ -177,6 +177,6 @@ public sealed class SalaInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(salaForm.EstourouValidacao());
+        Assert.IsTrue(salaForm.EstourouValidacaoAlert());
     }
 }

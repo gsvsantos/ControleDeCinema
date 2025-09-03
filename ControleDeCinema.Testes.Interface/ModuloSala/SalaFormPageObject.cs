@@ -15,17 +15,8 @@ public class SalaFormPageObject
 
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
         wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException), typeof(NoSuchElementException));
-
-        try
-        {
-            wait.Until(d =>
-                d.FindElement(By.CssSelector("form[data-se='form']")).Displayed);
-        }
-        catch (WebDriverTimeoutException)
-        {
-            DumpOnFailure(driver, "sala-timeout");
-            throw;
-        }
+        wait.Until(d =>
+            d.FindElement(By.CssSelector("form[data-se='form']")).Displayed);
     }
 
     public SalaFormPageObject PreencherNumero(int numero)
@@ -80,21 +71,14 @@ public class SalaFormPageObject
         wait.Until(d => d.FindElement(By.CssSelector("button[data-se='btnConfirmar']"))).Click();
         wait.Until(d =>
         {
-            if (d.FindElements(By.CssSelector("form[data-se='form']")).Count == 0)
-                return false;
-
             ReadOnlyCollection<IWebElement> spans = d.FindElements(By.CssSelector("span[data-valmsg-for]"));
             bool temMensagemCampo = spans.Any(s => !string.IsNullOrWhiteSpace(s.Text));
 
             ReadOnlyCollection<IWebElement> alerts = d.FindElements(By.CssSelector("div.alert[role='alert']"));
             bool temMensagemGeral = alerts.Any(a =>
             {
-                try
-                {
-                    string style = a.GetCssValue("display");
-                    return style != "none" && !string.IsNullOrWhiteSpace(a.Text);
-                }
-                catch (StaleElementReferenceException) { return false; }
+                string style = a.GetCssValue("display");
+                return style != "none" && !string.IsNullOrWhiteSpace(a.Text);
             });
 
             return temMensagemCampo || temMensagemGeral;
@@ -103,30 +87,14 @@ public class SalaFormPageObject
         return this;
     }
 
-    public bool EstourouValidacao(string nomeCampo = "")
+    public bool EstourouValidacaoSpan(string nomeCampo = "")
     {
-        if (!string.IsNullOrWhiteSpace(nomeCampo))
-        {
-            IWebElement span = driver.FindElement(By.CssSelector($"span[data-valmsg-for='{nomeCampo}']"));
-            if (!string.IsNullOrWhiteSpace(span.Text?.Trim()))
-                return true;
-        }
-
-        ReadOnlyCollection<IWebElement> alerts = driver.FindElements(By.CssSelector("div.alert[role='alert']"));
-        return alerts.Any(a => a.Displayed && !string.IsNullOrWhiteSpace(a.Text));
+        return wait.Until(d => d.FindElement(By.CssSelector($"span[data-valmsg-for='{nomeCampo}']")).Displayed);
     }
 
-    private static void DumpOnFailure(IWebDriver driver, string prefix)
+    public bool EstourouValidacaoAlert()
     {
-        try
-        {
-            Screenshot shot = ((ITakesScreenshot)driver).GetScreenshot();
-            string png = Path.Combine(Path.GetTempPath(), $"{prefix}-{DateTime.Now:HHmmss}.png");
-            shot.SaveAsFile(png);
-
-            string html = Path.Combine(Path.GetTempPath(), $"{prefix}-{DateTime.Now:HHmmss}.html");
-            File.WriteAllText(html, driver.PageSource);
-        }
-        catch { /* best-effort */ }
+        ReadOnlyCollection<IWebElement> alerts = driver.FindElements(By.CssSelector("div.alert[role='alert']"));
+        return alerts.Any(a => a.Displayed && !string.IsNullOrWhiteSpace(a.Text));
     }
 }

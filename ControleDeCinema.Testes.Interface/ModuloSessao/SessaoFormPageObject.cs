@@ -16,17 +16,8 @@ public class SessaoFormPageObject
 
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
         wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException), typeof(NoSuchElementException));
-
-        try
-        {
-            wait.Until(d =>
-                d.FindElement(By.CssSelector(cssSelectorToFind: "form[data-se='form']")).Displayed);
-        }
-        catch (WebDriverTimeoutException)
-        {
-            DumpOnFailure(driver, "sessao-timeout");
-            throw;
-        }
+        wait.Until(d =>
+            d.FindElement(By.CssSelector(cssSelectorToFind: "form[data-se='form']")).Displayed);
     }
 
     public SessaoFormPageObject PreencherInicio(string inicio)
@@ -163,30 +154,14 @@ public class SessaoFormPageObject
         return this;
     }
 
-    public bool EstourouValidacao(string nomeCampo = "")
+    public bool EstourouValidacaoSpan(string nomeCampo = "")
     {
-        if (!string.IsNullOrWhiteSpace(nomeCampo))
-        {
-            IWebElement span = driver.FindElement(By.CssSelector($"span[data-valmsg-for='{nomeCampo}']"));
-            if (!string.IsNullOrWhiteSpace(span.Text?.Trim()))
-                return true;
-        }
-
-        ReadOnlyCollection<IWebElement> alerts = driver.FindElements(By.CssSelector("div.alert[role='alert']"));
-        return alerts.Any(a => a.Displayed && !string.IsNullOrWhiteSpace(a.Text));
+        return wait.Until(d => d.FindElement(By.CssSelector($"span[data-valmsg-for='{nomeCampo}']")).Displayed);
     }
 
-    private static void DumpOnFailure(IWebDriver driver, string prefix)
+    public bool EstourouValidacaoAlert()
     {
-        try
-        {
-            Screenshot shot = ((ITakesScreenshot)driver).GetScreenshot();
-            string png = Path.Combine(Path.GetTempPath(), $"{prefix}-{DateTime.Now:HHmmss}.png");
-            shot.SaveAsFile(png);
-
-            string html = Path.Combine(Path.GetTempPath(), $"{prefix}-{DateTime.Now:HHmmss}.html");
-            File.WriteAllText(html, driver.PageSource);
-        }
-        catch { /* best-effort */ }
+        ReadOnlyCollection<IWebElement> alerts = driver.FindElements(By.CssSelector("div.alert[role='alert']"));
+        return alerts.Any(a => a.Displayed && !string.IsNullOrWhiteSpace(a.Text));
     }
 }

@@ -183,8 +183,8 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(filmeForm.EstourouValidacao("Titulo"));
-        Assert.IsTrue(filmeForm.EstourouValidacao("Duracao"));
+        Assert.IsTrue(filmeForm.EstourouValidacaoSpan("Titulo"));
+        Assert.IsTrue(filmeForm.EstourouValidacaoSpan("Duracao"));
     }
 
     [TestMethod]
@@ -214,7 +214,7 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(filmeForm.EstourouValidacao("Duracao"));
+        Assert.IsTrue(filmeForm.EstourouValidacaoSpan("Duracao"));
     }
 
     [TestMethod]
@@ -253,6 +253,6 @@ public sealed class FilmeInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(filmeForm.EstourouValidacao());
+        Assert.IsTrue(filmeForm.EstourouValidacaoAlert());
     }
 }

@@ -128,7 +128,7 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(generoFilmeForm.EstourouValidacao("Descricao"));
+        Assert.IsTrue(generoFilmeForm.EstourouValidacaoSpan("Descricao"));
     }
 
     [TestMethod]
@@ -153,6 +153,6 @@ public sealed class GeneroFilmeInterfaceTestes : TestFixture
             .ClickSubmitEsperandoErros();
 
         // Assert
-        Assert.IsTrue(generoFilmeForm.EstourouValidacao());
+        Assert.IsTrue(generoFilmeForm.EstourouValidacaoAlert());
     }
 }

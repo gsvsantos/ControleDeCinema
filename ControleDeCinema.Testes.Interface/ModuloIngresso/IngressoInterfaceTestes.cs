@@ -147,7 +147,7 @@ public sealed class IngressoInterfaceTestes : TestFixture
 
         // Assert
         FazerLogout();
-        FazerLogin("Empresa");
+        FazerLoginEmpresa();
 
         sessaoIndex
             .IrPara(enderecoBase)
