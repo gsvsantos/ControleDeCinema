@@ -10,6 +10,8 @@ Este projeto foi entregue com a aplicação já estruturada, mas a atividade pro
 
 ---
 
+[![wakatime](https://wakatime.com/badge/user/d66fe803-196c-4729-b330-f8a026db44ec/project/87dc4507-84ce-4534-ace5-54506ce6386f.svg)](https://wakatime.com/badge/user/d66fe803-196c-4729-b330-f8a026db44ec/project/87dc4507-84ce-4534-ace5-54506ce6386f)
+
 ## 🧩 Módulos do Sistema
 
 Mesmo que o foco seja os testes, entender os módulos é essencial, pois cada um contém regras de negócio cobertas nos cenários de validação.
